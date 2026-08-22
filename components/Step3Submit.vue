@@ -38,7 +38,7 @@ async function submitForm() {
       </svg>
       <h4>ثبت‌نام با موفقیت انجام شد</h4>
       <p>اطلاعات شما ثبت گردید.</p>
-      <!-- <NuxtLink to="/loans" class="goto-loans-btn">مشاهده وام‌ها</NuxtLink> -->
+      <NuxtLink to="/loans" class="goto-loans-btn">مشاهده وام‌ها</NuxtLink>
       <button @click="store.clearStore" class="reset-btn">ثبت‌نام جدید</button>
     </div>
 

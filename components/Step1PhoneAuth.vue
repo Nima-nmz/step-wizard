@@ -8,6 +8,8 @@ const store = useWizardStore()
 const { validationErrors } = storeToRefs(store)
 const { formattedTime, isRunning, canResend, start, reset } = useOTP(120)
 
+let hasRequestedOtp = false
+
 async function sendOtp() {
   if (!/^09\d{9}$/.test(store.phoneNumber)) {
     store.setValidationErrors({ phone_number: 'شماره موبایل معتبر نیست' })
@@ -19,6 +21,7 @@ async function sendOtp() {
   try {
     await sendOtpApi(store.phoneNumber)
     store.setOtpStatus('sent')
+    hasRequestedOtp = true
     start()
   } catch {
     store.setOtpStatus('failed')
@@ -76,15 +79,16 @@ function resendOtp() {
     </div>
 
     <button
+      v-if="!hasRequestedOtp"
       class="btn btn-primary"
       @click="sendOtp"
       :disabled="isRunning || store.otpStatus === 'sending'"
     >
       <span v-if="store.otpStatus === 'sending'" class="spinner" />
-      {{ isRunning ? `ارسال مجدد در ${formattedTime}` : 'ارسال کد' }}
+    ارسال کد
     </button>
 
-    <div v-if="isRunning || store.otpStatus === 'verified'" class="otp-section">
+    <div v-if="hasRequestedOtp" class="otp-section">
       <label for="otp">کد تأیید</label>
       <input
         id="otp"
@@ -111,7 +115,7 @@ function resendOtp() {
           تأیید
         </button>
         <button class="btn btn-secondary" @click="resendOtp" :disabled="!canResend">
-          ارسال مجدد
+         {{ isRunning ? `ارسال مجدد (${formattedTime})` : 'ارسال مجدد' }}
         </button>
       </div>
     </div>
