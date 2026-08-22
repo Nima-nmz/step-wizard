@@ -18,7 +18,6 @@ const emit = defineEmits<{ submit: [] }>()
 
 <template>
   <div class="wizard-layout" dir="rtl">
-    <!-- Progress Bar -->
     <div class="progress-bar">
       <div
         v-for="(step, index) in steps"
@@ -32,12 +31,10 @@ const emit = defineEmits<{ submit: [] }>()
       </div>
     </div>
 
-    <!-- Step Content -->
     <div class="step-content">
       <slot />
     </div>
 
-    <!-- Navigation -->
     <div class="wizard-nav">
       <button v-if="!isFirstStep" @click="prevStep" class="btn-prev">قبلی</button>
 
