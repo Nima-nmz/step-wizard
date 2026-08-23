@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import type { WizardState, PersonalInfo } from '~/types/wizard'
 
+export const AUTH_TOKEN_STORAGE_KEY = 'wizard_auth_token'
+
 const defaultState = (): WizardState => ({
   phoneNumber: '',
   password: '',
@@ -74,7 +76,14 @@ export const useWizardStore = defineStore('wizard', {
     setAuthToken(token: string | null) {
   this.authToken = token
   this.isAuthenticated = token !== null
-    },
+  if (import.meta.client) {
+        if (token) {
+          sessionStorage.setItem(AUTH_TOKEN_STORAGE_KEY, token)
+        } else {
+          sessionStorage.removeItem(AUTH_TOKEN_STORAGE_KEY)
+        }
+    }
+  },
 
     updatePersonalInfo(field: keyof PersonalInfo, value: string) {
       this.personalInfo[field] = value
@@ -116,6 +125,9 @@ export const useWizardStore = defineStore('wizard', {
     },
 
     clearStore() {
+      if (import.meta.client) {
+        sessionStorage.removeItem(AUTH_TOKEN_STORAGE_KEY)
+      }
       Object.assign(this, defaultState())
     },
   },
