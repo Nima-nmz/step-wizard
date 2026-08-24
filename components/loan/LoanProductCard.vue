@@ -24,57 +24,30 @@ function formatAmount(amount: number) {
 </template>
 
 <style scoped>
+@reference "~/assets/css/main.css";
+
 .product-card {
-  display: block;
-  width: 100%;
-  text-align: right;
-  padding: 1rem 1.1rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  background: #fff;
-  cursor: pointer;
-  font-family: inherit;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  @apply block w-full cursor-pointer rounded-xl border-2 border-gray-200 bg-white p-4 text-right font-[inherit] transition-[border-color,background-color] duration-200;
 }
-
 .product-card:hover {
-  border-color: #93c5fd;
+  @apply border-blue-300;
 }
-
 .product-card.selected {
-  border-color: #3b82f6;
-  background: #eff6ff;
+  @apply border-blue-500 bg-blue-50;
 }
-
 .product-card-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.4rem;
+  @apply mb-1.5 flex items-center justify-between;
 }
-
 .product-title {
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: #111827;
+  @apply text-[0.95rem] font-semibold text-gray-900;
 }
-
 .product-rate {
-  font-size: 0.75rem;
-  color: #3b82f6;
-  font-weight: 500;
+  @apply text-[0.75rem] font-medium text-blue-500;
 }
-
 .product-desc {
-  margin: 0 0 0.6rem;
-  font-size: 0.8rem;
-  color: #6b7280;
+  @apply mb-2.5 text-[0.8rem] text-gray-500;
 }
-
 .product-range {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: #9ca3af;
+  @apply flex justify-between text-[0.75rem] text-gray-400;
 }
 </style>

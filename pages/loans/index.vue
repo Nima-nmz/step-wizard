@@ -76,162 +76,76 @@ onMounted(fetchApplications)
   </div>
 </template>
 
-<style scoped>
+<style scoped >
+@reference "~/assets/css/main.css";
+
 .loans-page {
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 1.5rem 1rem;
+  @apply mx-auto max-w-[700px] px-4 py-6;
 }
-
 .loans-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  @apply mb-6 flex items-start justify-between gap-4;
 }
-
 .loans-header h1 {
-  margin: 0 0 0.25rem;
-  font-size: 1.4rem;
-  font-weight: 600;
+  @apply mb-1 text-[1.4rem] font-semibold;
 }
-
 .loans-header p {
-  margin: 0;
-  color: #6b7280;
-  font-size: 0.9rem;
+  @apply text-[0.9rem] text-gray-500;
 }
-
 .btn-new {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.6rem 1.25rem;
-  background: #3b82f6;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background-color 0.2s ease;
+  @apply inline-flex items-center whitespace-nowrap rounded-lg bg-blue-500 px-5 py-2.5 text-[0.9rem] font-medium text-white no-underline transition-colors duration-200 border-none;
 }
 .btn-new:hover {
-  background: #2563eb;
+  @apply bg-blue-600;
 }
-
 .state-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 3rem 1rem;
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  color: #6b7280;
-  text-align: center;
+  @apply flex flex-col items-center justify-center gap-3 rounded-xl bg-white p-12 text-center text-gray-500 shadow-[0_1px_3px_rgba(0,0,0,0.08)];
 }
-
 .empty-box svg {
-  color: #d1d5db;
+  @apply text-gray-300;
 }
-
 .error-box {
-  color: #dc2626;
+  @apply text-red-600;
 }
-
 .btn-retry {
-  padding: 0.5rem 1.25rem;
-  background: #f3f4f6;
-  color: #374151;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+  @apply rounded-lg border-none bg-gray-100 px-5 py-2 text-gray-700 cursor-pointer;
 }
 .btn-retry:hover {
-  background: #e5e7eb;
+  @apply bg-gray-200;
 }
-
 .spinner {
-  width: 22px;
-  height: 22px;
-  border: 3px solid #e5e7eb;
-  border-top-color: #3b82f6;
-  border-radius: 50%;
+  @apply h-[22px] w-[22px] rounded-full border-[3px] border-gray-200 border-t-blue-500;
   animation: spin 0.7s linear infinite;
 }
-
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
-
 .loan-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  @apply flex flex-col gap-3 list-none m-0 p-0;
 }
-
 .loan-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1.1rem 1.25rem;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  @apply flex items-center justify-between gap-4 rounded-[10px] bg-white p-[1.1rem_1.25rem] shadow-[0_1px_3px_rgba(0,0,0,0.08)];
 }
-
 .loan-card-main {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  @apply flex flex-col gap-1;
 }
-
 .loan-amount {
-  font-weight: 600;
-  font-size: 1rem;
-  color: #111827;
+  @apply text-base font-semibold text-gray-900;
 }
-
 .loan-duration {
-  font-size: 0.8rem;
-  color: #6b7280;
+  @apply text-[0.8rem] text-gray-500;
 }
-
 .loan-card-side {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+  @apply flex items-center gap-4;
 }
-
 .loan-detail-link {
-  font-size: 0.85rem;
-  color: #3b82f6;
-  text-decoration: none;
+  @apply text-[0.85rem] text-blue-500 no-underline;
 }
 .loan-detail-link:hover {
-  text-decoration: underline;
+  @apply underline;
 }
-
 @media (max-width: 480px) {
-  .loans-header {
-    flex-direction: column;
-  }
-  .loan-card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-  .loan-card-side {
-    width: 100%;
-    justify-content: space-between;
-  }
+  .loans-header { @apply flex-col; }
+  .loan-card { @apply flex-col items-start gap-3; }
+  .loan-card-side { @apply w-full justify-between; }
 }
 </style>

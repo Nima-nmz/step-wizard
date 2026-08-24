@@ -21,20 +21,15 @@ const config = computed(() => statusMap[props.status])
 </template>
 
 <style scoped>
-.loan-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  white-space: nowrap;
-}
+@reference "~/assets/css/main.css";
 
-.badge-draft { background: #f3f4f6; color: #6b7280; }
-.badge-pending { background: #fef3c7; color: #b45309; }
-.badge-review { background: #dbeafe; color: #1d4ed8; }
-.badge-approved { background: #dcfce7; color: #15803d; }
-.badge-rejected { background: #fee2e2; color: #b91c1c; }
-.badge-cancelled { background: #f3f4f6; color: #6b7280; }
+.loan-badge {
+  @apply inline-flex items-center whitespace-nowrap rounded-full px-3 py-1 text-[0.75rem] font-medium;
+}
+.badge-draft { @apply bg-gray-100 text-gray-500; }
+.badge-pending { @apply bg-amber-100 text-amber-700; }
+.badge-review { @apply bg-blue-100 text-blue-700; }
+.badge-approved { @apply bg-green-100 text-green-700; }
+.badge-rejected { @apply bg-red-100 text-red-700; }
+.badge-cancelled { @apply bg-gray-100 text-gray-500; }
 </style>

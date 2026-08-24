@@ -32,8 +32,10 @@ const store = useWizardStore()
 </template>
 
 <style scoped>
-.register-page { min-height: 100vh; background: #f3f4f6; padding: 2rem 1rem; }
-.wizard-header { text-align: center; margin-bottom: 2rem; }
-.wizard-header h1 { margin: 0 0 0.5rem; font-size: 1.75rem; }
-.wizard-header p { margin: 0; color: #6b7280; }
+@reference "~/assets/css/main.css";
+
+.register-page { @apply min-h-screen bg-gray-100 px-4 py-8; }
+.wizard-header { @apply mb-8 text-center; }
+.wizard-header h1 { @apply mb-2 text-[1.75rem]; }
+.wizard-header p { @apply text-gray-500; }
 </style>
