@@ -123,187 +123,97 @@ function resendOtp() {
 </template>
 
 <style scoped>
+@reference "~/assets/css/main.css";
+
 .step-card {
-  padding: 1.75rem;
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  @apply rounded-xl bg-white p-7 shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)];
 }
-
 .step-card h3 {
-  margin: 0 0 0.35rem;
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: #111827;
+  @apply mb-1.5 text-[1.15rem] font-semibold text-gray-900;
 }
-
 .step-desc {
-  margin: 0 0 1.5rem;
-  font-size: 0.875rem;
-  color: #6b7280;
+  @apply mb-6 text-[0.875rem] text-gray-500;
 }
-
 .form-group {
-  margin-bottom: 1rem;
+  @apply mb-4;
 }
-
 .form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  font-size: 0.9rem;
-  color: #374151;
+  @apply mb-2 block text-[0.9rem] font-medium text-gray-700;
 }
-
 .form-group input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1.5px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-family: inherit;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  box-sizing: border-box;
+  @apply w-full rounded-lg border-[1.5px] border-gray-300 bg-white p-3 text-base font-[inherit] transition-[border-color,box-shadow] duration-200 box-border;
 }
-
 .form-group input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  @apply border-blue-500 outline-none shadow-[0_0_0_3px_rgba(59,130,246,0.15)];
 }
-
 .form-group input:disabled {
-  background: #f9fafb;
-  color: #9ca3af;
-  cursor: not-allowed;
+  @apply bg-gray-50 text-gray-400 cursor-not-allowed;
 }
-
 .form-group input.has-error {
-  border-color: #ef4444;
+  @apply border-red-500;
 }
 .form-group input.has-error:focus {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+  @apply shadow-[0_0_0_3px_rgba(239,68,68,0.15)];
 }
-
-/* اینپوت شماره موبایل و OTP باید اعداد رو خواناتر نشون بدن */
 .phone-input {
   letter-spacing: 0.5px;
 }
-
 .otp-input {
-  text-align: center;
+  @apply text-center text-[1.25rem] font-semibold;
   letter-spacing: 8px;
-  font-size: 1.25rem;
-  font-weight: 600;
   font-family: 'Courier New', monospace;
 }
-
 .otp-input.is-verified {
-  border-color: #22c55e;
-  background: #f0fdf4;
-  color: #16a34a;
+  @apply border-green-500 bg-green-50 text-green-600;
 }
-
 .error {
-  color: #ef4444;
-  font-size: 0.8rem;
-  margin-top: 0.375rem;
-  display: block;
+  @apply mt-1.5 block text-[0.8rem] text-red-500;
 }
-
 .success {
-  color: #16a34a;
-  font-size: 0.8rem;
-  margin-top: 0.375rem;
-  display: block;
+  @apply mt-1.5 block text-[0.8rem] text-green-600;
 }
-
-/* ---------- دکمه‌ها ---------- */
 .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease, opacity 0.2s ease;
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-base font-medium font-[inherit] cursor-pointer transition-[background-color,transform,opacity] duration-200 border-none;
 }
-
 .btn:active:not(:disabled) {
-  transform: scale(0.97);
+  @apply scale-[0.97];
 }
-
 .btn:focus-visible {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
+  @apply outline-2 outline-blue-500 outline-offset-2;
 }
-
 .btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
+  @apply cursor-not-allowed opacity-[0.55];
 }
-
 .btn-primary {
-  background: #3b82f6;
-  color: #fff;
-  width: 100%;
+  @apply w-full bg-blue-500 text-white;
 }
 .btn-primary:hover:not(:disabled) {
-  background: #2563eb;
+  @apply bg-blue-600;
 }
-
 .btn-secondary {
-  background: #f3f4f6;
-  color: #374151;
+  @apply bg-gray-100 text-gray-700;
 }
 .btn-secondary:hover:not(:disabled) {
-  background: #e5e7eb;
+  @apply bg-gray-200;
 }
-
 .spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-top-color: #fff;
-  border-radius: 50%;
+  @apply h-[14px] w-[14px] rounded-full border-2 border-white/40 border-t-white;
   animation: spin 0.7s linear infinite;
 }
-
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
-
-/* ---------- بخش OTP ---------- */
 .otp-section {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #eee;
+  @apply mt-6 border-t border-gray-100 pt-6;
 }
-
 .otp-actions {
-  display: flex;
-  gap: 0.75rem;
-  margin-top: 1rem;
+  @apply mt-4 flex gap-3;
 }
-
 .otp-actions .btn {
-  flex: 1;
-  width: auto;
+  @apply flex-1 w-auto;
 }
-
 @media (max-width: 480px) {
-  .step-card {
-    padding: 1.25rem;
-  }
-  .otp-actions {
-    flex-direction: column;
-  }
+  .step-card { @apply p-5; }
+  .otp-actions { @apply flex-col; }
 }
 </style>
