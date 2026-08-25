@@ -54,63 +54,29 @@ function submit() {
 </template>
 
 <style scoped>
-.form-row { margin-bottom: 1rem; }
+@reference "~/assets/css/main.css";
+
+.form-row { @apply mb-4; }
 .form-row label {
-  display: block;
-  margin-bottom: 0.4rem;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #374151;
+  @apply mb-1.5 block text-[0.85rem] font-medium text-gray-700;
 }
 .form-row input {
-  width: 100%;
-  padding: 0.65rem 0.75rem;
-  border: 1.5px solid #ddd;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-family: inherit;
-  box-sizing: border-box;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  @apply w-full rounded-lg border-[1.5px] border-gray-300 bg-white px-3 py-2.5 text-[0.9rem] font-[inherit] box-border transition-[border-color,box-shadow] duration-200;
 }
 .form-row input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  @apply border-blue-500 outline-none shadow-[0_0_0_3px_rgba(59,130,246,0.15)];
 }
-.form-row input.has-error { border-color: #ef4444; }
-
+.form-row input.has-error { @apply border-red-500; }
 .error {
-  display: block;
-  color: #ef4444;
-  font-size: 0.75rem;
-  margin-top: 0.3rem;
+  @apply mt-1.5 block text-[0.75rem] text-red-500;
 }
-
 .btn-guarantor {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.7rem;
-  background: #f3f4f6;
-  color: #374151;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+  @apply flex w-full items-center justify-center gap-2 rounded-lg border-none bg-gray-100 p-[0.7rem] text-[0.9rem] font-medium text-gray-700 cursor-pointer transition-colors duration-200;
 }
-.btn-guarantor:hover:not(:disabled) { background: #e5e7eb; }
-.btn-guarantor:disabled { opacity: 0.6; cursor: not-allowed; }
-
+.btn-guarantor:hover:not(:disabled) { @apply bg-gray-200; }
+.btn-guarantor:disabled { @apply cursor-not-allowed opacity-60; }
 .spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid #d1d5db;
-  border-top-color: #374151;
-  border-radius: 50%;
+  @apply h-[14px] w-[14px] rounded-full border-2 border-gray-300 border-t-gray-700;
   animation: spin 0.7s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }

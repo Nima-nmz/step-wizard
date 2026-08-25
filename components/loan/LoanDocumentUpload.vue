@@ -62,67 +62,31 @@ function handleDrop(e: DragEvent) {
 </template>
 
 <style scoped>
-.dropzone {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 1.75rem 1rem;
-  border: 2px dashed #d1d5db;
-  border-radius: 10px;
-  text-align: center;
-  cursor: pointer;
-  color: #6b7280;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-.dropzone:hover { border-color: #9ca3af; }
-.dropzone.drag-active { border-color: #3b82f6; background: #eff6ff; }
-.dropzone.has-error { border-color: #ef4444; background: #fef2f2; }
-.dropzone p { margin: 0; font-size: 0.85rem; }
+@reference "~/assets/css/main.css";
 
+.dropzone {
+  @apply flex flex-col items-center justify-center gap-2 rounded-[10px] border-2 border-dashed border-gray-300 p-7 text-center text-gray-500 cursor-pointer transition-[border-color,background-color] duration-200;
+}
+.dropzone:hover { @apply border-gray-400; }
+.dropzone.drag-active { @apply border-blue-500 bg-blue-50; }
+.dropzone.has-error { @apply border-red-500 bg-red-50; }
+.dropzone p { @apply text-[0.85rem]; }
 .spinner {
-  width: 22px;
-  height: 22px;
-  border: 3px solid #e5e7eb;
-  border-top-color: #3b82f6;
-  border-radius: 50%;
+  @apply h-[22px] w-[22px] rounded-full border-[3px] border-gray-200 border-t-blue-500;
   animation: spin 0.7s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-
 .error {
-  color: #ef4444;
-  font-size: 0.8rem;
-  margin: 0.5rem 0 0;
+  @apply mt-2 text-[0.8rem] text-red-500;
 }
-
 .doc-list {
-  list-style: none;
-  margin: 0.75rem 0 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  @apply mt-3 flex flex-col gap-2 list-none m-0 p-0;
 }
-
 .doc-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.6rem 0.9rem;
-  background: #f9fafb;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  color: #374151;
+  @apply flex items-center justify-between rounded-lg bg-gray-50 px-3.5 py-2.5 text-[0.85rem] text-gray-700;
 }
-
 .doc-remove {
-  border: none;
-  background: none;
-  color: #ef4444;
-  font-size: 0.8rem;
-  cursor: pointer;
+  @apply border-none bg-transparent text-[0.8rem] text-red-500 cursor-pointer;
 }
-.doc-remove:hover { text-decoration: underline; }
+.doc-remove:hover { @apply underline; }
 </style>

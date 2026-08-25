@@ -130,197 +130,98 @@ function handleDrop(e: DragEvent) {
 </template>
 
 <style scoped>
+@reference "~/assets/css/main.css";
+
 .step-card {
-  padding: 1.75rem;
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  @apply rounded-xl bg-white p-7 shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)];
 }
-
 .step-card h3 {
-  margin: 0 0 1.25rem;
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: #111827;
+  @apply mb-5 text-[1.15rem] font-semibold text-gray-900;
 }
-
 .form-grid {
-  display: grid;
+  @apply grid gap-4;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
 }
-
 .form-group {
-  margin-bottom: 1rem;
+  @apply mb-4;
 }
-
 .form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  font-size: 0.9rem;
-  color: #374151;
+  @apply mb-2 block text-[0.9rem] font-medium text-gray-700;
 }
-
 .form-group input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1.5px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-family: inherit;
-  box-sizing: border-box;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  @apply w-full rounded-lg border-[1.5px] border-gray-300 bg-white p-3 text-base font-[inherit] box-border transition-[border-color,box-shadow] duration-200;
 }
-
 .form-group input:hover {
-  border-color: #c7cbd1;
+  @apply border-gray-300;
 }
-
 .form-group input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  @apply border-blue-500 outline-none shadow-[0_0_0_3px_rgba(59,130,246,0.15)];
 }
-
 .form-group input.has-error {
-  border-color: #ef4444;
+  @apply border-red-500;
 }
 .form-group input.has-error:focus {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+  @apply shadow-[0_0_0_3px_rgba(239,68,68,0.15)];
 }
-
 .full-width {
-  grid-column: 1 / -1;
+  @apply col-span-full;
 }
-
 .error {
-  color: #ef4444;
-  font-size: 0.8rem;
-  margin-top: 0.375rem;
-  display: block;
+  @apply mt-1.5 block text-[0.8rem] text-red-500;
 }
-
-/* ---------- بخش آپلود ---------- */
 .upload-section {
-  border: 2px dashed #d1d5db;
-  border-radius: 12px;
-  padding: 2rem;
-  text-align: center;
-  margin-top: 1.5rem;
-  cursor: pointer;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  @apply mt-6 cursor-pointer rounded-xl border-2 border-dashed border-gray-300 p-8 text-center transition-[border-color,background-color] duration-200;
 }
-
 .upload-section:hover {
-  border-color: #9ca3af;
-  background: #fafafa;
+  @apply border-gray-400 bg-gray-50;
 }
-
 .upload-section.drag-active {
-  border-color: #3b82f6;
-  background: #eff6ff;
+  @apply border-blue-500 bg-blue-50;
 }
-
 .upload-section.has-error {
-  border-color: #ef4444;
-  background: #fef2f2;
+  @apply border-red-500 bg-red-50;
 }
-
 .upload-placeholder svg {
-  color: #9ca3af;
-  margin-bottom: 1rem;
+  @apply mb-4 text-gray-400;
 }
-
 .upload-placeholder p {
-  margin: 0.5rem 0;
-  font-weight: 500;
-  color: #374151;
+  @apply my-2 font-medium text-gray-700;
 }
-
 .upload-placeholder span {
-  font-size: 0.875rem;
-  color: #6b7280;
+  @apply text-[0.875rem] text-gray-500;
 }
-
 .preview {
-  position: relative;
-  display: inline-block;
+  @apply relative inline-block;
 }
-
 .preview img {
-  max-width: 200px;
-  max-height: 200px;
-  object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-  display: block;
+  @apply block max-w-[200px] max-h-[200px] rounded-lg shadow-[0_1px_4px_rgba(0,0,0,0.15)] object-cover;
 }
-
-/* استفاده از inset-inline به‌جای right فیزیکی تا در RTL درست جا بگیره */
 .remove-btn {
-  position: absolute;
-  top: -8px;
+  @apply absolute -top-2 flex h-[26px] w-[26px] items-center justify-center rounded-full border-2 border-white bg-red-500 text-[0] text-white cursor-pointer transition-[background-color,transform] duration-200;
   inset-inline-end: -8px;
-  background: #ef4444;
-  color: #fff;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  width: 26px;
-  height: 26px;
-  font-size: 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s ease, transform 0.1s ease;
 }
-
 .remove-btn::before {
   content: '×';
-  font-size: 16px;
-  line-height: 1;
+  @apply text-[16px] leading-none;
 }
-
 .remove-btn:hover {
-  background: #dc2626;
+  @apply bg-red-600;
 }
-
 .remove-btn:active {
-  transform: scale(0.92);
+  @apply scale-[0.92];
 }
-
 .compressing {
-  margin-top: 1rem;
-  color: #3b82f6;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  @apply mt-4 flex items-center gap-2 text-[0.9rem] text-blue-500;
 }
-
 .spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(59, 130, 246, 0.25);
-  border-top-color: #3b82f6;
-  border-radius: 50%;
+  @apply h-[14px] w-[14px] shrink-0 rounded-full border-2 border-blue-500/25 border-t-blue-500;
   animation: spin 0.7s linear infinite;
-  flex-shrink: 0;
 }
-
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
-
 @media (max-width: 480px) {
-  .step-card {
-    padding: 1.25rem;
-  }
-  .upload-section {
-    padding: 1.25rem;
-  }
+  .step-card { @apply p-5; }
+  .upload-section { @apply p-5; }
 }
 </style>

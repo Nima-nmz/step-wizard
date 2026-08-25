@@ -74,201 +74,86 @@ async function submitForm() {
 </template>
 
 <style scoped>
+@reference "~/assets/css/main.css";
+
 .step-card {
-  padding: 1.75rem;
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  @apply rounded-xl bg-white p-7 shadow-[0_1px_3px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)];
 }
-
 .step-card h3 {
-  margin: 0 0 1.5rem;
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: #111827;
+  @apply mb-6 text-[1.15rem] font-semibold text-gray-900;
 }
-
-/* ---------- پیام موفقیت ---------- */
 .success-message {
-  text-align: center;
-  padding: 2.5rem 1rem;
+  @apply py-10 px-4 text-center;
 }
-
 .success-message svg {
-  color: #22c55e;
-  margin-bottom: 1rem;
+  @apply mb-4 text-green-500;
 }
-
 .success-message h4 {
-  margin: 0.5rem 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #111827;
+  @apply my-2 text-[1.1rem] font-semibold text-gray-900;
 }
-
 .success-message p {
-  color: #6b7280;
-  font-size: 0.9rem;
+  @apply text-[0.9rem] text-gray-500;
 }
-
 .reset-btn {
-  margin-top: 1.5rem;
-  width: 100%;
-  padding: 0.75rem;
-  background: #f3f4f6;
-  color: #374151;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  @apply mt-6 w-full rounded-lg border-none bg-gray-100 p-3 text-base font-medium text-gray-700 cursor-pointer transition-[background-color,transform] duration-200;
 }
-
 .reset-btn:hover {
-  background: #e5e7eb;
+  @apply bg-gray-200;
 }
-
 .reset-btn:active {
-  transform: scale(0.98);
+  @apply scale-[0.98];
 }
-
 .reset-btn:focus-visible {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
+  @apply outline-2 outline-blue-500 outline-offset-2;
 }
-
-/* ---------- خلاصه اطلاعات ---------- */
 .summary {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
+  @apply flex flex-col gap-5;
 }
-
 .summary-section {
-  padding: 1rem 1.25rem;
-  background: #f9fafb;
-  border: 1px solid #f1f2f4;
-  border-radius: 10px;
+  @apply rounded-[10px] border border-gray-100 bg-gray-50 p-5;
 }
-
 .summary-section h4 {
-  margin: 0 0 0.6rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #6b7280;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  @apply mb-2.5 text-[0.8rem] font-semibold uppercase tracking-[0.02em] text-gray-500;
 }
-
 .goto-loans-btn {
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  background: #3b82f6;
-  color: #fff;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 0.95rem;
-  font-weight: 500;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  @apply mt-4 flex flex-1 items-center justify-center gap-2 rounded-lg bg-blue-500 px-3 py-3 text-[0.95rem] font-medium text-white no-underline transition-[background-color,transform] duration-200;
 }
-.goto-loans-btn:hover { background: #2563eb; }
-.goto-loans-btn:active { transform: scale(0.98); }
-.goto-loans-btn:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; }
-
+.goto-loans-btn:hover { @apply bg-blue-600; }
+.goto-loans-btn:active { @apply scale-[0.98]; }
+.goto-loans-btn:focus-visible { @apply outline-2 outline-blue-500 outline-offset-2; }
 .summary-section p {
-  margin: 0.3rem 0;
-  font-size: 0.95rem;
-  color: #1f2937;
-  line-height: 1.6;
+  @apply my-1 text-[0.95rem] leading-relaxed text-gray-800;
 }
-
 .preview-img {
-  max-width: 160px;
-  max-height: 160px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  display: block;
+  @apply mt-2 block max-w-[160px] max-h-[160px] rounded-lg border border-gray-200 object-cover;
 }
-
-/* ---------- دکمه ارسال ---------- */
 .submit-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  width: 100%;
-  padding: 1rem;
-  font-size: 1.05rem;
-  font-weight: 500;
-  font-family: inherit;
-  background: #3b82f6;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 0.5rem;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  @apply mt-2 flex w-full items-center justify-center gap-2 rounded-lg border-none bg-blue-500 p-4 text-[1.05rem] font-medium font-[inherit] text-white cursor-pointer transition-[background-color,transform] duration-200;
 }
-
 .submit-btn:hover:not(:disabled) {
-  background: #2563eb;
+  @apply bg-blue-600;
 }
-
 .submit-btn:active:not(:disabled) {
-  transform: scale(0.98);
+  @apply scale-[0.98];
 }
-
 .submit-btn:focus-visible {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
+  @apply outline-2 outline-blue-500 outline-offset-2;
 }
-
 .submit-btn:disabled {
-  background: #93c5fd;
-  cursor: not-allowed;
+  @apply bg-blue-300 cursor-not-allowed;
 }
-
 .spinner {
-  width: 15px;
-  height: 15px;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-top-color: #fff;
-  border-radius: 50%;
+  @apply h-[15px] w-[15px] rounded-full border-2 border-white/40 border-t-white;
   animation: spin 0.7s linear infinite;
 }
-
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
-
-/* ---------- خطای عمومی ---------- */
 .general-error {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1rem;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 8px;
-  color: #dc2626;
-  font-size: 0.875rem;
-  margin-top: 1rem;
+  @apply mt-4 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3.5 text-[0.875rem] text-red-600;
 }
-
 @media (max-width: 480px) {
-  .step-card {
-    padding: 1.25rem;
-  }
-  .summary-section {
-    padding: 0.85rem 1rem;
-  }
+  .step-card { @apply p-5; }
+  .summary-section { @apply p-3.5; }
 }
 </style>

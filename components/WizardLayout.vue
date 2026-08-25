@@ -37,182 +37,84 @@ const emit = defineEmits<{ submit: [] }>()
 
     <div class="wizard-nav">
       <button v-if="!isFirstStep" @click="prevStep" class="btn-prev">قبلی</button>
-
       <div v-if="isLastStep" class="nav-spacer" />
-
       <button v-if="!isLastStep" @click="nextStep" :disabled="!canGoNext" class="btn-next">بعدی</button>
-
-
     </div>
   </div>
 </template>
 
 <style scoped>
+@reference "~/assets/css/main.css";
+
 .wizard-layout {
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 1.5rem 1rem;
-  font-family: inherit;
+  @apply mx-auto max-w-[700px] px-4 py-6 font-[inherit];
 }
-
-/* ---------- Progress bar ---------- */
 .progress-bar {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 2.5rem;
-  position: relative;
+  @apply relative mb-10 flex items-start;
 }
-
 .step-indicator {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  position: relative;
-  z-index: 1;
+  @apply relative z-[1] flex flex-1 flex-col items-center;
 }
-
 .step-circle {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 3px solid #e5e7eb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 0.95rem;
-  background: #fff;
-  color: #9ca3af;
-  transition: border-color 0.25s ease, background-color 0.25s ease, color 0.25s ease;
+  @apply flex h-[42px] w-[42px] items-center justify-center rounded-full border-[3px] border-gray-200 bg-white text-[0.95rem] font-semibold text-gray-400 transition-[border-color,background-color,color] duration-250;
 }
-
 .step-indicator.active .step-circle {
-  border-color: #3b82f6;
-  color: #3b82f6;
+  @apply border-blue-500 text-blue-500;
 }
-
 .step-indicator.completed .step-circle {
-  border-color: #22c55e;
-  background: #22c55e;
-  color: #fff;
+  @apply border-green-500 bg-green-500 text-white;
 }
-
 .step-label {
-  margin-top: 0.5rem;
-  font-size: 0.8rem;
-  color: #9ca3af;
-  text-align: center;
-  transition: color 0.25s ease, font-weight 0.25s ease;
+  @apply mt-2 text-center text-[0.8rem] text-gray-400 transition-[color,font-weight] duration-250;
 }
-
 .step-indicator.active .step-label,
 .step-indicator.completed .step-label {
-  color: #374151;
-  font-weight: 500;
+  @apply text-gray-700 font-medium;
 }
-
-/* از منطق inline استفاده می‌کنیم تا در RTL درست بشه */
 .step-line {
-  position: absolute;
-  top: 21px;
+  @apply absolute top-[21px] z-0 h-[3px] bg-gray-200 transition-colors duration-300;
   inset-inline-start: 59%;
   inset-inline-end: -50%;
-  height: 3px;
-  background: #e5e7eb;
-  z-index: 0;
-  transition: background-color 0.3s ease;
 }
-
 .step-line.active {
-  background: #22c55e; /* رنگ سبز چون یعنی مرحله رد شده */
+  @apply bg-green-500;
 }
-
-/* ---------- محتوای مرحله ---------- */
 .step-content {
-  min-height: 300px;
+  @apply min-h-[300px];
 }
-
-/* ---------- ناوبری ---------- */
 .wizard-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
-  gap: 0.75rem;
+  @apply mt-8 flex items-center justify-between gap-3 border-t border-gray-200 pt-6;
 }
-
 .nav-spacer {
-  width: 80px;
+  @apply w-20;
 }
-
 button {
-  padding: 0.75rem 2rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease, opacity 0.2s ease;
+  @apply rounded-lg px-8 py-3 text-base font-medium cursor-pointer transition-[background-color,transform,opacity] duration-200;
 }
-
 button:active {
-  transform: scale(0.97);
+  @apply scale-[0.97];
 }
-
 button:focus-visible {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
+  @apply outline-2 outline-blue-500 outline-offset-2;
 }
-
 .btn-prev {
-  background: #f3f4f6;
-  color: #374151;
+  @apply bg-gray-100 text-gray-700;
 }
 .btn-prev:hover {
-  background: #e5e7eb;
+  @apply bg-gray-200;
 }
-
 .btn-next {
-  background: #3b82f6;
-  color: #fff;
+  @apply bg-blue-500 text-white;
 }
 .btn-next:hover:not(:disabled) {
-  background: #2563eb;
+  @apply bg-blue-600;
 }
 .btn-next:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  @apply opacity-50 cursor-not-allowed;
 }
-
-.btn-submit {
-  background: #22c55e;
-  color: #fff;
-  min-width: 130px;
-}
-.btn-submit:hover:not(:disabled) {
-  background: #16a34a;
-}
-.btn-submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* ---------- ریسپانسیو ---------- */
 @media (max-width: 480px) {
-  .step-label {
-    font-size: 0.7rem;
-  }
-  .step-circle {
-    width: 34px;
-    height: 34px;
-    font-size: 0.85rem;
-  }
-  .wizard-nav button {
-    padding: 0.65rem 1.25rem;
-    font-size: 0.9rem;
-  }
+  .step-label { @apply text-[0.7rem]; }
+  .step-circle { @apply h-[34px] w-[34px] text-[0.85rem]; }
+  button { @apply px-5 py-2.5 text-[0.9rem]; }
 }
 </style>

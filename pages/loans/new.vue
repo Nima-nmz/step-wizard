@@ -180,167 +180,76 @@ onMounted(fetchProducts)
 </template>
 
 <style scoped>
-.new-loan-page {
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 1.5rem 1rem;
-}
+@reference "~/assets/css/main.css";
 
+.new-loan-page {
+  @apply mx-auto max-w-[700px] px-4 py-6;
+}
 .page-header {
-  margin-bottom: 1.5rem;
+  @apply mb-6;
 }
 .page-header h1 {
-  margin: 0 0 0.25rem;
-  font-size: 1.4rem;
-  font-weight: 600;
+  @apply mb-1 text-[1.4rem] font-semibold;
 }
 .page-header p {
-  margin: 0;
-  color: #6b7280;
-  font-size: 0.9rem;
+  @apply text-[0.9rem] text-gray-500;
 }
-
 .state-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 3rem 1rem;
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  color: #6b7280;
+  @apply flex flex-col items-center justify-center gap-3 rounded-xl bg-white p-12 text-gray-500 shadow-[0_1px_3px_rgba(0,0,0,0.08)];
 }
-.error-box { color: #dc2626; }
+.error-box { @apply text-red-600; }
 .btn-retry {
-  padding: 0.5rem 1.25rem;
-  background: #f3f4f6;
-  color: #374151;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+  @apply rounded-lg border-none bg-gray-100 px-5 py-2 text-gray-700 cursor-pointer;
 }
-
 .spinner {
-  width: 20px;
-  height: 20px;
-  border: 3px solid #e5e7eb;
-  border-top-color: #3b82f6;
-  border-radius: 50%;
+  @apply h-5 w-5 rounded-full border-[3px] border-gray-200 border-t-blue-500;
   animation: spin 0.7s linear infinite;
 }
 .spinner-sm {
-  width: 14px;
-  height: 14px;
-  border-width: 2px;
-  border-color: rgba(255, 255, 255, 0.4);
-  border-top-color: #fff;
+  @apply h-[14px] w-[14px] border-2 border-white/40 border-t-white;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-
 .product-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  @apply mb-6 flex flex-col gap-3;
 }
-
 .calc-form {
-  padding: 1.5rem;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  @apply rounded-xl bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)];
 }
-
 .form-row {
-  margin-bottom: 1rem;
+  @apply mb-4;
 }
 .form-row label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  font-size: 0.9rem;
-  color: #374151;
+  @apply mb-2 block text-[0.9rem] font-medium text-gray-700;
 }
 .form-row input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1.5px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-family: inherit;
-  box-sizing: border-box;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  @apply w-full rounded-lg border-[1.5px] border-gray-300 bg-white p-3 text-base font-[inherit] box-border transition-[border-color,box-shadow] duration-200;
 }
 .form-row input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  @apply border-blue-500 outline-none shadow-[0_0_0_3px_rgba(59,130,246,0.15)];
 }
-
 .btn-calc {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  background: #3b82f6;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+  @apply flex w-full items-center justify-center gap-2 rounded-lg border-none bg-blue-500 p-3 text-[0.95rem] font-medium text-white cursor-pointer transition-colors duration-200;
 }
-.btn-calc:hover:not(:disabled) { background: #2563eb; }
-.btn-calc:disabled { opacity: 0.55; cursor: not-allowed; }
-
+.btn-calc:hover:not(:disabled) { @apply bg-blue-600; }
+.btn-calc:disabled { @apply cursor-not-allowed opacity-[0.55]; }
 .error {
-  color: #ef4444;
-  font-size: 0.85rem;
-  margin-top: 0.75rem;
+  @apply mt-3 text-[0.85rem] text-red-500;
 }
-
 .calc-result {
-  margin-top: 1.25rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid #eee;
+  @apply mt-5 border-t border-gray-100 pt-5;
 }
 .result-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.4rem 0;
-  font-size: 0.9rem;
-  color: #374151;
+  @apply flex justify-between py-1.5 text-[0.9rem] text-gray-700;
 }
 .result-row strong {
-  color: #111827;
+  @apply text-gray-900;
 }
-
 .btn-submit {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
-  padding: 0.85rem;
-  background: #22c55e;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+  @apply mt-4 flex w-full items-center justify-center gap-2 rounded-lg border-none bg-green-500 p-[0.85rem] text-[0.95rem] font-medium text-white cursor-pointer transition-colors duration-200;
 }
-.btn-submit:hover:not(:disabled) { background: #16a34a; }
-.btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
-
+.btn-submit:hover:not(:disabled) { @apply bg-green-600; }
+.btn-submit:disabled { @apply cursor-not-allowed opacity-60; }
 @media (max-width: 480px) {
-  .calc-form { padding: 1.1rem; }
+  .calc-form { @apply p-[1.1rem]; }
 }
 </style>
