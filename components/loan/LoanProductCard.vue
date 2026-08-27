@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import type { LoanProduct } from '~/types/loan'
+import { useLoanFormatter } from '~/composables/useLoanFormatter'
 
 defineProps<{ product: LoanProduct; selected: boolean }>()
 defineEmits<{ select: [] }>()
 
-function formatAmount(amount: number) {
-  return new Intl.NumberFormat('fa-IR').format(amount)
-}
+const { formatAmount } = useLoanFormatter()
 </script>
 
 <template>
@@ -17,7 +16,7 @@ function formatAmount(amount: number) {
     </div>
     <p class="product-desc">{{ product.description }}</p>
     <div class="product-range">
-      <span>{{ formatAmount(product.minAmount) }} تا {{ formatAmount(product.maxAmount) }} تومان</span>
+      <span>{{ formatAmount(product.minAmount) }} تا {{ formatAmount(product.maxAmount) }}</span>
       <span>{{ product.minDurationMonths }} تا {{ product.maxDurationMonths }} ماه</span>
     </div>
   </button>
