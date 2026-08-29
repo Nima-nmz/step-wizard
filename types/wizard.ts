@@ -14,6 +14,7 @@ export interface WizardState {
   otpStatus: 'idle' | 'sending' | 'sent' | 'verifying' | 'verified' | 'failed'
   authToken: string | null
   isAuthenticated: boolean
+  role: 'user' | 'admin' | null
 
   personalInfo: PersonalInfo
   idCardFile: File | null
@@ -29,6 +30,7 @@ export interface WizardState {
 export interface ValidationCode {
   token: string
   refresh_token: string
+  role: 'user' | 'admin'
 }
 
 export interface ApiErrorResponse {
