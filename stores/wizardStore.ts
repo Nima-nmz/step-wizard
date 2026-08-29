@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import type { WizardState, PersonalInfo } from '~/types/wizard'
 
 export const AUTH_TOKEN_STORAGE_KEY = 'wizard_auth_token'
+export const AUTH_ROLE_STORAGE_KEY = 'wizard_auth_role'
 
 const defaultState = (): WizardState => ({
   phoneNumber: '',
@@ -11,6 +12,7 @@ const defaultState = (): WizardState => ({
   otpStatus: 'idle',
   authToken: null,
   isAuthenticated: false,
+  role: null,
 
   personalInfo: {
     firstName: '',
@@ -37,6 +39,8 @@ export const useWizardStore = defineStore('wizard', {
 
     isStep1PasswordValid: (s) =>
       s.password.length >= 6 && s.isAuthenticated,
+
+    isAdmin: (s) => s.role === 'admin',
 
     isStep2Valid: (s) =>
       !!s.personalInfo.firstName &&
@@ -85,6 +89,17 @@ export const useWizardStore = defineStore('wizard', {
     }
   },
 
+  setRole(role: WizardState['role']) {
+      this.role = role
+      if (import.meta.client) {
+        if (role) {
+          sessionStorage.setItem(AUTH_ROLE_STORAGE_KEY, role)
+        } else {
+          sessionStorage.removeItem(AUTH_ROLE_STORAGE_KEY)
+        }
+      }
+    },
+
     updatePersonalInfo(field: keyof PersonalInfo, value: string) {
       this.personalInfo[field] = value
       this.clearFieldError(field)
@@ -127,6 +142,7 @@ export const useWizardStore = defineStore('wizard', {
     clearStore() {
       if (import.meta.client) {
         sessionStorage.removeItem(AUTH_TOKEN_STORAGE_KEY)
+        sessionStorage.removeItem(AUTH_ROLE_STORAGE_KEY)
       }
       Object.assign(this, defaultState())
     },
