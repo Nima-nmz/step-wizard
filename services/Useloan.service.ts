@@ -9,7 +9,7 @@ import type {
   LoanListResponse,
   LoanTimelineEvent,
 } from '~/types/loan'
-import { LOAN_URLS } from './api.config'
+import { LOAN_URLS, ADMIN_LOAN_URLS } from './api.config'
 import { useFetchApi } from './useFetchApi'
 
 
@@ -77,3 +77,19 @@ export async function getLoanTimeline(loanId: number): Promise<LoanTimelineEvent
   const fetchData = useFetchApi<LoanTimelineEvent[]>()
   return fetchData(LOAN_URLS.timeline(loanId).url, { method: 'GET' })
 }
+
+export async function getAdminLoanList(page = 1, perPage = 10): Promise<LoanListResponse> {
+  const fetchData = useFetchApi<LoanListResponse>()
+  return fetchData(ADMIN_LOAN_URLS.list.url, { method: 'GET', query: { page, perPage } })
+}
+
+export async function approveLoanByAdmin(loanId: number): Promise<LoanApplication> {
+  const fetchData = useFetchApi<LoanApplication>()
+  return fetchData(ADMIN_LOAN_URLS.approve(loanId).url, { method: 'POST' })
+}
+
+export async function rejectLoanByAdmin(loanId: number, reason?: string): Promise<LoanApplication> {
+  const fetchData = useFetchApi<LoanApplication>()
+  return fetchData(ADMIN_LOAN_URLS.reject(loanId).url, { method: 'POST', body: { reason } })
+}
+

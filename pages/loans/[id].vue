@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useWizardStore } from '~/stores/wizardStore'
 import { useLoanDetail } from '~/composables/useLoanDetail'
 import PageContainer from '~/components/ui/PageContainer.vue'
 import LoadingState from '~/components/ui/LoadingState.vue'
@@ -14,19 +16,21 @@ import LoanTimeline from '~/components/loan/LoanTimeline.vue'
 
 const route = useRoute()
 const router = useRouter()
+const store = useWizardStore()
 const loanId = Number(route.params.id)
+const isAdmin = computed(() => store.role === 'admin')
 
 const {
   application, timeline, loading, loadError,
   uploading, uploadError, submittingGuarantor, guarantorErrors,
-  submittingFinal, finalError, cancelling, canSubmitFinal,
-  fetchAll, uploadDocument, removeDocument, submitGuarantor, submitFinal, cancel,
+  submittingFinal, finalError, cancelling, submittingAdmin, canSubmitFinal,
+  fetchAll, uploadDocument, removeDocument, submitGuarantor, submitFinal, cancel, handleAdminApprove, handleAdminReject,
 } = useLoanDetail(loanId)
 </script>
 
 <template>
   <PageContainer>
-    <button class="back-link" @click="router.push('/loans')">← بازگشت به لیست</button>
+    <button class="back-link" @click="router.push(isAdmin ? '/admin' : '/loans')">← بازگشت به لیست</button>
 
     <LoadingState :loading="loading" :error="loadError" loading-text="در حال دریافت اطلاعات..." @retry="fetchAll">
       <template v-if="application">
@@ -38,6 +42,17 @@ const {
           :error="finalError"
           @cancel="cancel"
         />
+
+        <SectionCard v-if="isAdmin && application.status !== 'draft'" title="عملیات ادمین">
+          <div class="flex gap-3">
+            <LoadingButton variant="success" :disabled="application.status === 'approved' || submittingAdmin" :loading="submittingAdmin" @click="handleAdminApprove">
+              تأیید درخواست
+            </LoadingButton>
+            <LoadingButton variant="danger" @click="handleAdminReject('رد شده')">
+              رد درخواست
+            </LoadingButton>
+          </div>
+        </SectionCard>
 
         <SectionCard v-if="application.status === 'draft'" title="مدارک ضمانت">
           <LoanDocumentUpload
