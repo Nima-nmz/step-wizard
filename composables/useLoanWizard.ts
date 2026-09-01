@@ -3,12 +3,10 @@ import { useRouter } from 'vue-router'
 import { useLoanStore } from '~/stores/Loanstore'
 import { getLoanProducts, calculateLoanInstallment, applyLoan } from '~/services/Useloan.service'
 import { useAsyncOperation } from '~/composables/useAsyncOperation'
-import { useApiError } from '~/composables/useApiError'
 
 export function useLoanWizard() {
   const router = useRouter()
   const store = useLoanStore()
-  const { getMessage } = useApiError()
 
   const productsOp = useAsyncOperation()
   const calcOp = useAsyncOperation()
@@ -45,10 +43,7 @@ export function useLoanWizard() {
         durationMonths: durationMonths.value!,
       })
       store.setCalculation(result)
-    })
-    if (calcOp.error.value) {
-      calcOp.error.value = getMessage(calcOp.error.value, 'محاسبه با خطا مواجه شد.')
-    }
+    }, 'محاسبه قسط با خطا مواجه شد.')
   }
 
   async function submitApplication() {
@@ -61,10 +56,7 @@ export function useLoanWizard() {
       })
       store.setCurrentApplication(application)
       router.push(`/loans/${application.id}`)
-    })
-    if (applyOp.error.value) {
-      applyOp.error.value = getMessage(applyOp.error.value, 'ثبت درخواست با خطا مواجه شد.')
-    }
+    }, 'ثبت درخواست با خطا مواجه شد.')
   }
 
   watch([amount, durationMonths], () => {
