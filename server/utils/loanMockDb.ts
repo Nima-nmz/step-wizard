@@ -35,6 +35,7 @@ export const LOAN_PRODUCTS: LoanProduct[] = [
 
 interface LoanRecord extends LoanApplication {
   timeline: LoanTimelineEvent[]
+  ownerToken: string
 }
 
 const applications: LoanRecord[] = []
@@ -54,6 +55,7 @@ function seed() {
       status: 'approved',
       documents: [],
       guarantor: null,
+      ownerToken: 'user-seed-1',
       createdAt: '2026-07-01T09:00:00.000Z',
       updatedAt: '2026-07-05T09:00:00.000Z',
       timeline: [
@@ -70,6 +72,7 @@ function seed() {
       status: 'rejected',
       documents: [],
       guarantor: null,
+      ownerToken: 'user-seed-1',
       createdAt: '2026-06-15T09:00:00.000Z',
       updatedAt: '2026-06-18T09:00:00.000Z',
       timeline: [
@@ -81,7 +84,7 @@ function seed() {
 }
 seed()
 
-export function createApplication(productId: number, amount: number, durationMonths: number): LoanRecord {
+export function createApplication(productId: number, amount: number, durationMonths: number, ownerToken: string): LoanRecord {
   const record: LoanRecord = {
     id: nextLoanId++,
     productId,
@@ -90,6 +93,7 @@ export function createApplication(productId: number, amount: number, durationMon
     status: 'draft',
     documents: [],
     guarantor: null,
+    ownerToken,
     createdAt: nowIso(),
     updatedAt: nowIso(),
     timeline: [{ id: nextTimelineId++, status: 'draft', note: 'درخواست ایجاد شد', createdAt: nowIso() }],
@@ -103,11 +107,10 @@ export function findApplication(id: number): LoanRecord | undefined {
 }
 
 export function listApplications(): LoanRecord[] {
-
   return [...applications].sort((a, b) => b.id - a.id)
 }
 
-export function addDocument(app: LoanRecord, name: string ,url = '#') {
+export function addDocument(app: LoanRecord, name: string, url = '#') {
   const doc = { id: nextDocId++, name, url, uploadedAt: nowIso() }
   app.documents.push(doc)
   app.updatedAt = nowIso()
@@ -131,6 +134,10 @@ export function pushTimeline(app: LoanRecord, status: LoanStatus, note?: string)
 }
 
 export function toPublicApplication(record: LoanRecord): LoanApplication {
-  const { timeline, ...rest } = record
+  const { timeline, ownerToken, ...rest } = record
   return rest
+}
+
+export function getOwnerToken(record: LoanRecord): string {
+  return record.ownerToken
 }

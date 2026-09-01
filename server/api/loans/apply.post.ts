@@ -6,6 +6,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, data: { message: 'احراز هویت نامعتبر است' } })
   }
 
+  const ownerToken = authHeader.slice(7).trim()
   const body = await readBody<{ productId: number; amount: number; durationMonths: number }>(event)
   const errors: Record<string, string[]> = {}
 
@@ -17,6 +18,6 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 422, data: { message: 'اطلاعات نامعتبر است', errors } })
   }
 
-  const record = createApplication(body.productId, body.amount, body.durationMonths)
+  const record = createApplication(body.productId, body.amount, body.durationMonths, ownerToken)
   return toPublicApplication(record)
 })
