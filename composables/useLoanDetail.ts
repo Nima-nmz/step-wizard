@@ -7,6 +7,8 @@ import {
   submitLoanGuarantor,
   submitLoanApplication,
   cancelLoan,
+  approveLoanByAdmin,
+  rejectLoanByAdmin,
 } from '~/services/Useloan.service'
 import type { LoanApplication, LoanTimelineEvent, LoanGuarantor } from '~/types/loan'
 import { useAsyncOperation } from '~/composables/useAsyncOperation'
@@ -20,6 +22,7 @@ export function useLoanDetail(loanId: number) {
   const guarantorOp = useAsyncOperation()
   const finalOp = useAsyncOperation()
   const cancelOp = useAsyncOperation()
+  const adminOp = useAsyncOperation()
 
   const application = ref<LoanApplication | null>(null)
   const timeline = ref<LoanTimelineEvent[]>([])
@@ -49,9 +52,9 @@ export function useLoanDetail(loanId: number) {
       await deleteLoanDocument(loanId, docId)
       if (application.value) {
         application.value.documents = application.value.documents.filter((d) => d.id !== docId)
-    }
-  }, (e) => getMessage(e, 'حذف مدرک با خطا مواجه شد.'))
-}
+      }
+    }, (e) => getMessage(e, 'حذف مدرک با خطا مواجه شد.'))
+  }
 
   async function submitGuarantor(payload: LoanGuarantor) {
     guarantorErrors.value = {}
@@ -84,6 +87,22 @@ export function useLoanDetail(loanId: number) {
     }, (e) => getMessage(e, 'لغو درخواست با خطا مواجه شد.'))
   }
 
+  async function handleAdminApprove() {
+    if (!application.value) return
+    await adminOp.execute(async () => {
+      const updated = await approveLoanByAdmin(application.value!.id)
+      application.value = updated
+    }, (e) => getMessage(e, 'تأیید با خطا مواجه شد.'))
+  }
+
+  async function handleAdminReject(reason: string) {
+    if (!application.value) return
+    await adminOp.execute(async () => {
+      const updated = await rejectLoanByAdmin(application.value!.id, reason)
+      application.value = updated
+    }, (e) => getMessage(e, 'رد درخواست با خطا مواجه شد.'))
+  }
+
   onMounted(fetchAll)
 
   return {
@@ -98,6 +117,7 @@ export function useLoanDetail(loanId: number) {
     submittingFinal: finalOp.loading,
     finalError: finalOp.error,
     cancelling: cancelOp.loading,
+    submittingAdmin: adminOp.loading,
     canSubmitFinal,
     fetchAll,
     uploadDocument,
@@ -105,5 +125,7 @@ export function useLoanDetail(loanId: number) {
     submitGuarantor,
     submitFinal,
     cancel,
+    handleAdminApprove,
+    handleAdminReject,
   }
 }
