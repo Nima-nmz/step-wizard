@@ -4,6 +4,7 @@ import { useLoanFormatter } from '~/composables/useLoanFormatter'
 import PageContainer from '~/components/ui/PageContainer.vue'
 import LoadingState from '~/components/ui/LoadingState.vue'
 import LoanStatusBadge from '~/components/loan/LoanStatusBadge.vue'
+import { Button } from '@/components/ui/button'
 
 const { applications, loading, error, fetchApplications } = useLoanList()
 const { formatAmount } = useLoanFormatter()
@@ -16,7 +17,9 @@ const { formatAmount } = useLoanFormatter()
         <h1>درخواست‌های وام</h1>
         <p>لیست درخواست‌های ثبت‌شده و وضعیت هر کدوم</p>
       </div>
-      <NuxtLink to="/loans/new" class="btn-new">درخواست جدید</NuxtLink>
+      <NuxtLink to="/loans/new" class="no-underline">
+        <Button variant="outline" class="btn-new">درخواست جدید</Button>
+      </NuxtLink>
     </header>
 
     <LoadingState :loading="loading" :error="error" loading-text="در حال دریافت لیست..." @retry="fetchApplications">
@@ -61,14 +64,14 @@ const { formatAmount } = useLoanFormatter()
   @apply flex flex-col gap-3 list-none m-0 p-0;
 }
 .loan-card {
-  @apply flex items-center justify-between gap-4 rounded-[10px] bg-white p-[1.1rem_1.25rem] shadow-[0_1px_3px_rgba(0,0,0,0.08)];
+  @apply flex items-center justify-between gap-4 rounded-[10px] bg-white p-[1.1rem_1.25rem] shadow-[0_2px_4px_rgba(0,0,0,0.08)];
 }
 .loan-card-main { @apply flex flex-col gap-1; }
 .loan-amount { @apply text-base font-semibold text-gray-900; }
 .loan-duration { @apply text-[0.8rem] text-gray-500; }
 .loan-card-side { @apply flex items-center gap-4; }
 .loan-detail-link { @apply text-[0.85rem] text-blue-500 no-underline; }
-.loan-detail-link:hover { @apply underline; }
+.loan-detail-link:hover { @apply text-blue-800; }
 @media (max-width: 480px) {
   .loans-header { @apply flex-col; }
   .loan-card { @apply flex-col items-start gap-3; }
