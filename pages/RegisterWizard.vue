@@ -5,6 +5,7 @@ import Step1PhoneAuth from '~/components/Step1PhoneAuth.vue'
 import Step2PersonalInfo from '~/components/Step2PersonalInfo.vue'
 import Step3Submit from '~/components/Step3Submit.vue'
 
+definePageMeta({ layout: 'wizard' })
 const store = useWizardStore()
 </script>
 
@@ -34,7 +35,6 @@ const store = useWizardStore()
 <style scoped>
 @reference "~/assets/css/main.css";
 
-.register-page { @apply min-h-screen bg-gray-100 px-4 py-8; }
 .wizard-header { @apply mb-8 text-center; }
 .wizard-header h1 { @apply mb-2 text-[1.75rem]; }
 .wizard-header p { @apply text-gray-500; }

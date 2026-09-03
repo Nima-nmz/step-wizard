@@ -5,6 +5,7 @@ import type { LoanApplication } from '~/types/loan'
 import PageContainer from '~/components/ui/PageContainer.vue'
 import LoadingState from '~/components/ui/LoadingState.vue'
 import LoanCard from '~/components/loan/LoanCard.vue'
+import { Button } from '@/components/ui/button'
 
 definePageMeta({ middleware: 'admin' })
 
@@ -104,15 +105,16 @@ onMounted(fetchLoans)
     </div>
 
     <div class="filter-row">
-      <button
+      <Button
         v-for="f in filterOptions"
         :key="f.key"
-        class="filter-btn"
-        :class="{ active: filterStatus === f.key }"
+        variant="outline"
+        size="sm"
+        :class="{ 'bg-blue-500 text-white border-blue-500': filterStatus === f.key }"
         @click="filterStatus = f.key"
       >
         {{ f.label }}
-      </button>
+      </Button>
     </div>
 
     <LoadingState :loading="loading" :error="error" loading-text="در حال دریافت لیست..." @retry="fetchLoans">
@@ -123,20 +125,22 @@ onMounted(fetchLoans)
       <ul v-else class="loan-list">
         <LoanCard v-for="loan in filteredApplications" :key="loan.id" :loan="loan" showDate>
           <div class="flex gap-2">
-            <button
-              class="btn btn-approve"
+            <Button
+              variant="success"
+              size="sm"
               :disabled="loan.status === 'approved' || actingOnId === loan.id"
               @click="handleApprove(loan)"
             >
               تأیید
-            </button>
-            <button
-              class="btn btn-reject"
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
               :disabled="loan.status === 'rejected' || actingOnId === loan.id"
               @click="handleRejectConfirm(loan.id, 'رد شده')"
             >
               رد کردن
-            </button>
+            </Button>
           </div>
         </LoanCard>
       </ul>
@@ -179,36 +183,9 @@ onMounted(fetchLoans)
 .filter-row {
   @apply mb-4 flex flex-wrap gap-2;
 }
-.filter-btn {
-  @apply rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-[0.8rem] font-medium text-gray-600 cursor-pointer transition-colors duration-200;
-}
-.filter-btn:hover {
-  @apply bg-gray-50;
-}
-.filter-btn.active {
-  @apply bg-blue-500 text-white border-blue-500;
-}
 
 .loan-list {
   @apply flex flex-col gap-3 list-none m-0 p-0;
-}
-.btn {
-  @apply rounded-lg px-4 py-2 text-[0.85rem] font-medium border-none cursor-pointer transition-colors duration-200;
-}
-.btn:disabled {
-  @apply cursor-not-allowed opacity-50;
-}
-.btn-approve {
-  @apply bg-green-500 text-white;
-}
-.btn-approve:hover:not(:disabled) {
-  @apply bg-green-600;
-}
-.btn-reject {
-  @apply bg-red-500 text-white;
-}
-.btn-reject:hover:not(:disabled) {
-  @apply bg-red-600;
 }
 .empty-box {
   @apply rounded-[10px] bg-white p-8 text-center text-gray-500;

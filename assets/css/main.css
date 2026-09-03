@@ -4,11 +4,18 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@font-face {
+  font-family: 'IRANYekan'; 
+  src: url('public/fonts/IRANYekanXVF.woff') format('woff'); 
+  font-display: swap;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 html {
   direction: rtl;
   -webkit-text-size-adjust: 100%;
+  font-family: 'IRANYekan';
 }
 
 body {
