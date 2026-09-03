@@ -6,13 +6,13 @@ import { useLoanDetail } from '~/composables/useLoanDetail'
 import PageContainer from '~/components/ui/PageContainer.vue'
 import LoadingState from '~/components/ui/LoadingState.vue'
 import SectionCard from '~/components/ui/SectionCard.vue'
-import LoadingButton from '~/components/ui/LoadingButton.vue'
+import { Button } from '@/components/ui/button'
 import LoanDetailHeader from '~/components/loan/LoanDetailHeader.vue'
-import LoanDocumentUpload from '~/components/loan/LoanDocumentUpload.vue'
 import LoanDocumentViewer from '~/components/loan/LoanDocumentViewer.vue'
 import LoanGuarantorForm from '~/components/loan/LoanGuarantorForm.vue'
 import LoanGuarantorCard from '~/components/loan/LoanGuarantorCard.vue'
 import LoanTimeline from '~/components/loan/LoanTimeline.vue'
+import { ArrowRightIcon } from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()
@@ -30,7 +30,9 @@ const {
 
 <template>
   <PageContainer>
-    <button class="back-link" @click="router.push(isAdmin ? '/admin' : '/loans')">← بازگشت به لیست</button>
+         <Button variant="info-soft" class="back-link" @click="router.push(isAdmin ? '/admin' : '/loans')">
+        <ArrowRightIcon/>
+        بازگشت به لیست </Button>
 
     <LoadingState :loading="loading" :error="loadError" loading-text="در حال دریافت اطلاعات..." @retry="fetchAll">
       <template v-if="application">
@@ -44,18 +46,20 @@ const {
         />
 
         <SectionCard v-if="isAdmin && application.status !== 'draft'" title="عملیات ادمین">
-          <div class="flex gap-3">
-            <LoadingButton variant="success" :disabled="application.status === 'approved' || submittingAdmin" :loading="submittingAdmin" @click="handleAdminApprove">
+          <div class="flex mx-8 gap-3 w-70">
+            <Button variant="success" :disabled="application.status === 'approved' || submittingAdmin" :loading="submittingAdmin" @click="handleAdminApprove">
               تأیید درخواست
-            </LoadingButton>
-            <LoadingButton variant="danger" @click="handleAdminReject('رد شده')">
+            </Button>
+            <Button variant="destructive" @click="handleAdminReject('رد شده')">
               رد درخواست
-            </LoadingButton>
+            </Button>
           </div>
         </SectionCard>
 
         <SectionCard v-if="application.status === 'draft'" title="مدارک ضمانت">
-          <LoanDocumentUpload
+          <LoanDocuments 
+            v-if="!isAdmin"
+            mode="manage"
             :documents="application.documents"
             :uploading="uploading"
             :error="uploadError"
@@ -77,14 +81,15 @@ const {
         </SectionCard>
 
         <SectionCard v-if="application.status === 'draft'">
-          <LoadingButton variant="success" :loading="submittingFinal" :disabled="!canSubmitFinal" @click="submitFinal">
+          <Button variant="success" :loading="submittingFinal" :disabled="!canSubmitFinal" @click="submitFinal">
             {{ submittingFinal ? 'در حال ارسال...' : 'ارسال نهایی درخواست' }}
-          </LoadingButton>
+          </Button>
           <p v-if="!canSubmitFinal" class="hint">برای ارسال نهایی، حداقل یک مدرک و اطلاعات ضامن لازمه.</p>
         </SectionCard>
 
         <SectionCard v-if="application.status !== 'draft' && application.documents.length" title="مدارک ارسالی">
-          <LoanDocumentViewer
+          <LoanDocuments
+            mode="view"
             :documents="application.documents"
           />
         </SectionCard>
@@ -107,9 +112,8 @@ const {
 @reference "~/assets/css/main.css";
 
 .back-link {
-  @apply mb-4 inline-block cursor-pointer border-none bg-transparent p-0 text-[0.85rem] text-blue-500;
+  @apply cursor-pointer mb-4 text-[0.85rem] text-blue-500;
 }
-.back-link:hover { @apply underline; }
 .guarantor-done {
   @apply rounded-lg bg-green-50 p-3 text-[0.85rem] text-green-700;
 }
