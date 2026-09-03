@@ -3,6 +3,35 @@ import { ref } from 'vue'
 import { useWizardStore } from '~/stores/wizardStore'
 import { useImageCompressor } from '~/composables/useImageCompressor'
 import { storeToRefs } from 'pinia'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import { cn } from '@/lib/utils'
+import {
+  DateFormatter,
+  type DateValue,
+  getLocalTimeZone,
+  parseDate,
+  today
+} from '@internationalized/date'
+import { Calendar as CalendarIcon } from 'lucide-vue-next'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+
+const birthDate = ref<string>('') 
+const birthDateValue = ref<DateValue>()
+
+if (birthDate.value) {
+  try {
+    birthDateValue.value = parseDate(birthDate.value)
+  } catch (e) {
+    birthDateValue.value = undefined
+  }
+}
+
+const dateFormatter = new DateFormatter('fa-IR', {
+  dateStyle: 'medium',
+})
 
 const store = useWizardStore()
 const { validationErrors } = storeToRefs(store)
@@ -52,6 +81,15 @@ function handleDrop(e: DragEvent) {
     compress(file).then(store.setIdCardFile)
   }
 }
+watch(birthDateValue, (newVal) => {
+  if (newVal) {
+    birthDate.value = newVal.toString() // خروجی استاندارد: 'YYYY-MM-DD'
+    store.updatePersonalInfo('birthDate', birthDate.value)
+  } else {
+    birthDate.value = ''
+    store.updatePersonalInfo('birthDate', '')
+  }
+})
 </script>
 
 <template>
@@ -60,40 +98,61 @@ function handleDrop(e: DragEvent) {
 
     <div class="form-grid">
       <div class="form-group">
-        <label>نام</label>
-        <input v-model="store.personalInfo.firstName"
+        <Label>نام</Label>
+        <Input v-model="store.personalInfo.firstName"
           :class="{ 'has-error': validationErrors.first_name }"
           @input="store.updatePersonalInfo('firstName', ($event.target as HTMLInputElement).value)" />
         <span v-if="validationErrors.first_name" class="error">{{ validationErrors.first_name }}</span>
       </div>
 
       <div class="form-group">
-        <label>نام خانوادگی</label>
-        <input v-model="store.personalInfo.lastName"
+        <Label>نام خانوادگی</Label>
+        <Input v-model="store.personalInfo.lastName"
           :class="{ 'has-error': validationErrors.last_name }"
           @input="store.updatePersonalInfo('lastName', ($event.target as HTMLInputElement).value)" />
         <span v-if="validationErrors.last_name" class="error">{{ validationErrors.last_name }}</span>
       </div>
 
       <div class="form-group">
-        <label>کد ملی</label>
-        <input v-model="store.personalInfo.nationalId" maxlength="10"
+        <Label>کد ملی</Label>
+        <Input v-model="store.personalInfo.nationalId" maxlength="10"
           :class="{ 'has-error': validationErrors.national_id }"
           @input="store.updatePersonalInfo('nationalId', ($event.target as HTMLInputElement).value)" />
         <span v-if="validationErrors.national_id" class="error">{{ validationErrors.national_id }}</span>
       </div>
 
       <div class="form-group">
-        <label>تاریخ تولد</label>
-        <input v-model="store.personalInfo.birthDate" type="date"
-          :class="{ 'has-error': validationErrors.birth_date }"
-          @input="store.updatePersonalInfo('birthDate', ($event.target as HTMLInputElement).value)" />
-        <span v-if="validationErrors.birth_date" class="error">{{ validationErrors.birth_date }}</span>
-      </div>
+        <Label>تاریخ تولد</Label>
+        <Popover :modal="false">
+          <PopoverTrigger as-child>
+            <Button
+            variant="outline"
+            :class="cn(
+              'w-full justify-start text-right font-normal h-9 px-3'
+            )"
+      >
+      <CalendarIcon  class="ml-2 size-4 text-muted-foreground shrink-0" />
+      <span class="text-sm ">
+        {{ birthDateValue ? dateFormatter.format(birthDateValue.toDate(getLocalTimeZone())) : "انتخاب تاریخ..." }}
+      </span>
+      </Button>
+    </PopoverTrigger>
+    
+    <PopoverContent class="w-auto p-0">
+      <Calendar
+      v-model="birthDateValue"
+      :max-value="today(getLocalTimeZone())"
+      initial-focus
+        layout="month-and-year"
+        />
+      </PopoverContent>
+  </Popover>
+  <span v-if="validationErrors.birth_date" class="error">{{ validationErrors.birth_date }}</span>
+</div>
 
       <div class="form-group full-width">
-        <label>ایمیل (اختیاری)</label>
-        <input v-model="store.personalInfo.email" type="email"
+        <Label>ایمیل (اختیاری)</Label>
+        <Input v-model="store.personalInfo.email" type="email"
           @input="store.updatePersonalInfo('email', ($event.target as HTMLInputElement).value)" />
       </div>
     </div>
@@ -105,7 +164,7 @@ function handleDrop(e: DragEvent) {
 
       <div v-if="store.idCardPreview" class="preview">
         <img :src="store.idCardPreview" alt="پیش‌نمایه کارت ملی" />
-        <button type="button" @click.stop="clearFile" class="remove-btn" aria-label="حذف عکس">حذف</button>
+        <Button type="button" variant="destructive" size="icon" @click.stop="clearFile" class="remove-btn" aria-label="حذف عکس">حذف</Button>
       </div>
 
       <div v-else class="upload-placeholder">
@@ -148,15 +207,6 @@ function handleDrop(e: DragEvent) {
 .form-group label {
   @apply mb-2 block text-[0.9rem] font-medium text-gray-700;
 }
-.form-group input {
-  @apply w-full rounded-lg border-[1.5px] border-gray-300 bg-white p-3 text-base font-[inherit] box-border transition-[border-color,box-shadow] duration-200;
-}
-.form-group input:hover {
-  @apply border-gray-300;
-}
-.form-group input:focus {
-  @apply border-blue-500 outline-none shadow-[0_0_0_3px_rgba(59,130,246,0.15)];
-}
 .form-group input.has-error {
   @apply border-red-500;
 }
@@ -197,18 +247,8 @@ function handleDrop(e: DragEvent) {
   @apply block max-w-[200px] max-h-[200px] rounded-lg shadow-[0_1px_4px_rgba(0,0,0,0.15)] object-cover;
 }
 .remove-btn {
-  @apply absolute -top-2 flex h-[26px] w-[26px] items-center justify-center rounded-full border-2 border-white bg-red-500 text-[0] text-white cursor-pointer transition-[background-color,transform] duration-200;
+  @apply absolute -top-2;
   inset-inline-end: -8px;
-}
-.remove-btn::before {
-  content: '×';
-  @apply text-[16px] leading-none;
-}
-.remove-btn:hover {
-  @apply bg-red-600;
-}
-.remove-btn:active {
-  @apply scale-[0.92];
 }
 .compressing {
   @apply mt-4 flex items-center gap-2 text-[0.9rem] text-blue-500;

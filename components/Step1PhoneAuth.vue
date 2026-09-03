@@ -2,13 +2,31 @@
 import { useWizardStore } from '~/stores/wizardStore'
 import { sendOtpApi, verifyOtpApi } from '~/services/Useauth.service'
 import { useOTP } from '~/composables/useOTP'
+import { useAdminAuth } from '~/composables/useAdminAuth'
 import { storeToRefs } from 'pinia'
+import InputOTP from './ui/input-otp/InputOTP.vue'
+import InputOTPGroup from './ui/input-otp/InputOTPGroup.vue'
+import InputOTPSlot from './ui/input-otp/InputOTPSlot.vue'
+import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'vue-input-otp'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 const store = useWizardStore()
 const { validationErrors } = storeToRefs(store)
+const { handleAdminRedirect } = useAdminAuth()
 const { formattedTime, isRunning, canResend, start, reset } = useOTP(120)
 
 let hasRequestedOtp = false
+
+const statusClass = computed(() => {
+  if (store.otpStatus === 'verified') {
+    return '!border-green-500 !ring-green-500 text-green-600 bg-green-50/30'
+  }
+  if (store.otpStatus === 'failed') {
+    return '!border-destructive !ring-destructive text-destructive bg-destructive/10'
+  }
+  return ''
+})
 
 async function sendOtp() {
   if (!/^09\d{9}$/.test(store.phoneNumber)) {
@@ -33,9 +51,11 @@ async function verifyOtp() {
   store.setOtpStatus('verifying')
 
   try {
-    const data =  await verifyOtpApi(store.phoneNumber,store.otpCode)
+    const data = await verifyOtpApi(store.phoneNumber, store.otpCode)
+    store.setRole(data.role)
     store.setAuthToken(data.token)
     store.setOtpStatus('verified')
+    handleAdminRedirect(data.role)
   } catch (error: any) {
     store.setOtpStatus('failed')
     if (error?.data?.errors) {
@@ -62,61 +82,73 @@ function resendOtp() {
 
     <div class="form-group">
       <label for="phone">شماره موبایل</label>
-      <input
-        id="phone"
-        v-model="store.phoneNumber"
-        type="tel"
-        inputmode="numeric"
-        maxlength="11"
-        placeholder="۰۹xxxxxxxxx"
-        class="phone-input"
-        :class="{ 'has-error': validationErrors.phone_number }"
-        :disabled="store.otpStatus === 'sent' && isRunning"
-      />
+      <Input 
+      v-model="store.phoneNumber" 
+      type="tel" 
+      class="phone-input"
+      inputmode="numeric" 
+      placeholder="۰۹xxxxxxxxx" 
+      maxlength="11" 
+      :disabled="store.otpStatus === 'sent' && isRunning" 
+      :class="{ 'has-error': validationErrors.phone_number }"  />
+
       <span v-if="validationErrors.phone_number" class="error">
         {{ validationErrors.phone_number }}
       </span>
     </div>
 
-    <button
+    <Button
       v-if="!hasRequestedOtp"
-      class="btn btn-primary"
+      variant="info"
+      class="w-l"
       @click="sendOtp"
       :disabled="isRunning || store.otpStatus === 'sending'"
     >
       <span v-if="store.otpStatus === 'sending'" class="spinner" />
-    ارسال کد
-    </button>
+      ارسال کد
+    </Button>
 
     <div v-if="hasRequestedOtp" class="otp-section">
-      <label for="otp">کد تأیید</label>
-      <input
-        id="otp"
-        v-model="store.otpCode"
-        type="text"
-        inputmode="numeric"
-        maxlength="6"
-        placeholder="- - - - - -"
+      <div class="flex gap-5">
+      <label for="otp">کد تأیید : </label>
+      
+        <InputOTP 
+        id="otp" 
         class="otp-input"
-        :class="{ 'has-error': validationErrors.code, 'is-verified': store.otpStatus === 'verified' }"
-        :disabled="store.otpStatus === 'verified'"
-        @input="store.setOtpCode(($event.target as HTMLInputElement).value)"
-      />
+        v-model="store.otpCode" 
+        @input="store.setOtpCode(($event.target as HTMLInputElement).value)" 
+        inputmode="numeric" 
+        :maxlength="6"
+        :pattern="REGEXP_ONLY_DIGITS_AND_CHARS
+        ">
+    <InputOTPGroup dir="ltr">
+        <InputOTPSlot 
+          v-for="index in 6" 
+          :key="index - 1" 
+          :index="index - 1" 
+          :class="statusClass"
+        />
+    </InputOTPGroup>
+  </InputOTP>
+  </div>
+
       <span v-if="validationErrors.code" class="error">{{ validationErrors.code }}</span>
       <span v-if="store.otpStatus === 'verified'" class="success">شماره موبایل با موفقیت تأیید شد</span>
 
       <div class="otp-actions">
-        <button
-          class="btn btn-primary"
-          @click="verifyOtp"
-          :disabled="store.otpCode.length !== 6 || store.otpStatus === 'verifying' || store.otpStatus === 'verified'"
-        >
-          <span v-if="store.otpStatus === 'verifying'" class="spinner" />
-          تأیید
-        </button>
-        <button class="btn btn-secondary" @click="resendOtp" :disabled="!canResend">
-         {{ isRunning ? `ارسال مجدد (${formattedTime})` : 'ارسال مجدد' }}
-        </button>
+        <Button 
+        class="flex-1" 
+        variant="success" 
+        size="lg" 
+        @click="verifyOtp"
+        :disabled="store.otpCode.length !== 6 || store.otpStatus === 'verifying' || store.otpStatus === 'verified'">
+                  <span v-if="store.otpStatus === 'verifying'" class="spinner" />
+           تأیید
+        </Button>
+        
+        <Button class="flex-1" variant="secondary" @click="resendOtp" :disabled="!canResend">
+          {{ isRunning ? `ارسال مجدد (${formattedTime})` : 'ارسال مجدد' }}
+        </Button>
       </div>
     </div>
   </div>
@@ -208,9 +240,6 @@ function resendOtp() {
 }
 .otp-actions {
   @apply mt-4 flex gap-3;
-}
-.otp-actions .btn {
-  @apply flex-1 w-auto;
 }
 @media (max-width: 480px) {
   .step-card { @apply p-5; }

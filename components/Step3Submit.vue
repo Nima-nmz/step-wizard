@@ -2,6 +2,7 @@
 import { useWizardStore } from '~/stores/wizardStore'
 import { registerApi } from '~/services/useRegister.service'
 import { storeToRefs } from 'pinia'
+import { Button } from '@/components/ui/button'
 
 const store = useWizardStore()
 const { validationErrors } = storeToRefs(store)
@@ -39,7 +40,7 @@ async function submitForm() {
       <h4>ثبت‌نام با موفقیت انجام شد</h4>
       <p>اطلاعات شما ثبت گردید.</p>
       <NuxtLink to="/loans" class="goto-loans-btn">مشاهده وام‌ها</NuxtLink>
-      <button @click="store.clearStore" class="reset-btn">ثبت‌نام جدید</button>
+      <Button @click="store.clearStore" variant="secondary" class="w-full">ثبت‌نام جدید</Button>
     </div>
 
     <div v-else class="summary">
@@ -60,12 +61,12 @@ async function submitForm() {
         <h4>کارت ملی</h4>
         <img v-if="store.idCardPreview" :src="store.idCardPreview" alt="کارت ملی" class="preview-img" />
       </div>
-
-      <button @click="submitForm" :disabled="store.isSubmitting" class="submit-btn">
+      <div class="flex justify-center">
+      <Button @click="submitForm" variant="success" size="lg" :disabled="store.isSubmitting" class="w-70 justify-center items-center text-center mt-2">
 <span v-if="store.isSubmitting" class="spinner" />
         <span v-else>تأیید و ثبت‌نام</span>
-      </button>
-
+      </Button>
+      </div>
       <div v-if="validationErrors.general" class="general-error">
         {{ validationErrors.general }}
       </div>
@@ -83,7 +84,7 @@ async function submitForm() {
   @apply mb-6 text-[1.15rem] font-semibold text-gray-900;
 }
 .success-message {
-  @apply py-10 px-4 text-center;
+  @apply py-10 space-y-2 px-4 text-center;
 }
 .success-message svg {
   @apply mb-4 text-green-500;
@@ -93,18 +94,6 @@ async function submitForm() {
 }
 .success-message p {
   @apply text-[0.9rem] text-gray-500;
-}
-.reset-btn {
-  @apply mt-6 w-full rounded-lg border-none bg-gray-100 p-3 text-base font-medium text-gray-700 cursor-pointer transition-[background-color,transform] duration-200;
-}
-.reset-btn:hover {
-  @apply bg-gray-200;
-}
-.reset-btn:active {
-  @apply scale-[0.98];
-}
-.reset-btn:focus-visible {
-  @apply outline-2 outline-blue-500 outline-offset-2;
 }
 .summary {
   @apply flex flex-col gap-5;
@@ -126,21 +115,6 @@ async function submitForm() {
 }
 .preview-img {
   @apply mt-2 block max-w-[160px] max-h-[160px] rounded-lg border border-gray-200 object-cover;
-}
-.submit-btn {
-  @apply mt-2 flex w-full items-center justify-center gap-2 rounded-lg border-none bg-blue-500 p-4 text-[1.05rem] font-medium font-[inherit] text-white cursor-pointer transition-[background-color,transform] duration-200;
-}
-.submit-btn:hover:not(:disabled) {
-  @apply bg-blue-600;
-}
-.submit-btn:active:not(:disabled) {
-  @apply scale-[0.98];
-}
-.submit-btn:focus-visible {
-  @apply outline-2 outline-blue-500 outline-offset-2;
-}
-.submit-btn:disabled {
-  @apply bg-blue-300 cursor-not-allowed;
 }
 .spinner {
   @apply h-[15px] w-[15px] rounded-full border-2 border-white/40 border-t-white;
