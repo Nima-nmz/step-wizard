@@ -2,6 +2,7 @@
 import { useWizardStore } from '~/stores/wizardStore'
 import { useWizard } from '~/composables/useWizard'
 import { storeToRefs } from 'pinia'
+import { Button } from '@/components/ui/button'
 
 const store = useWizardStore()
 const { isSubmitting } = storeToRefs(store)
@@ -36,9 +37,9 @@ const emit = defineEmits<{ submit: [] }>()
     </div>
 
     <div class="wizard-nav">
-      <button v-if="!isFirstStep" @click="prevStep" class="btn-prev">قبلی</button>
+      <Button v-if="!isFirstStep" @click="prevStep" variant="outline">قبلی</Button>
       <div v-if="isLastStep" class="nav-spacer" />
-      <button v-if="!isLastStep" @click="nextStep" :disabled="!canGoNext" class="btn-next">بعدی</button>
+      <Button v-if="!isLastStep" @click="nextStep" :disabled="!canGoNext" variant="info">بعدی</Button>
     </div>
   </div>
 </template>
@@ -87,30 +88,6 @@ const emit = defineEmits<{ submit: [] }>()
 }
 .nav-spacer {
   @apply w-20;
-}
-button {
-  @apply rounded-lg px-8 py-3 text-base font-medium cursor-pointer transition-[background-color,transform,opacity] duration-200;
-}
-button:active {
-  @apply scale-[0.97];
-}
-button:focus-visible {
-  @apply outline-2 outline-blue-500 outline-offset-2;
-}
-.btn-prev {
-  @apply bg-gray-100 text-gray-700;
-}
-.btn-prev:hover {
-  @apply bg-gray-200;
-}
-.btn-next {
-  @apply bg-blue-500 text-white;
-}
-.btn-next:hover:not(:disabled) {
-  @apply bg-blue-600;
-}
-.btn-next:disabled {
-  @apply opacity-50 cursor-not-allowed;
 }
 @media (max-width: 480px) {
   .step-label { @apply text-[0.7rem]; }

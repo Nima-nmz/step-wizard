@@ -2,8 +2,10 @@
 import type { LoanStatus } from '~/types/loan'
 import LoanStatusBadge from '~/components/loan/LoanStatusBadge.vue'
 import { useLoanFormatter } from '~/composables/useLoanFormatter'
-import LoadingButton from '~/components/ui/LoadingButton.vue'
+import { Button } from '@/components/ui/button'
+import { useWizardStore } from '~/stores/wizardStore'
 
+const store = useWizardStore()
 const props = defineProps<{
   amount: number
   durationMonths: number
@@ -30,15 +32,15 @@ const canCancel = computed(() => ['pending', 'under_review'].includes(props.stat
       <LoanStatusBadge :status="status" />
     </div>
 
-    <LoadingButton
-      v-if="canCancel"
-      variant="cancel"
+    <Button
+      v-if="canCancel && !store.isAdmin"
+      variant="destructive-soft"
       size="sm"
       :loading="cancelling"
       @click="emit('cancel')"
     >
       {{ cancelling ? 'در حال لغو...' : 'لغو درخواست' }}
-    </LoadingButton>
+    </Button>
     <p v-if="error" class="error">{{ error }}</p>
   </div>
 </template>
@@ -47,7 +49,7 @@ const canCancel = computed(() => ['pending', 'under_review'].includes(props.stat
 @reference "~/assets/css/main.css";
 
 .summary-card {
-  @apply p-5 bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.08)] mb-4;
+  @apply p-5 space-y-4 bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.08)] mb-4;
 }
 .summary-head {
   @apply flex items-center justify-between;

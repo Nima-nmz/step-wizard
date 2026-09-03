@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Label } from '@/components/ui/label'
+
 defineProps<{
   label?: string
   error?: string
@@ -7,7 +9,7 @@ defineProps<{
 
 <template>
   <div class="form-row">
-    <label v-if="label">{{ label }}</label>
+    <Label class="mb-3" v-if="label">{{ label }}</Label>
     <slot />
     <span v-if="error" class="field-error">{{ error }}</span>
   </div>
@@ -17,9 +19,6 @@ defineProps<{
 @reference "~/assets/css/main.css";
 
 .form-row { @apply mb-4; }
-.form-row label {
-  @apply mb-1.5 block text-[0.85rem] font-medium text-gray-700;
-}
 :deep(input) {
   @apply w-full rounded-lg border-[1.5px] border-gray-300 bg-white px-3 py-2.5 text-[0.9rem] font-[inherit] box-border transition-[border-color,box-shadow] duration-200;
 }
