@@ -1,21 +1,24 @@
 <script setup lang="ts">
-import type { PrimitiveProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import type { ButtonVariants } from "."
 import { Primitive } from "reka-ui"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "."
 
-interface Props extends /* @vue-ignore */ PrimitiveProps {
+interface Props {
+  as?: string
+  asChild?: boolean
   variant?: ButtonVariants["variant"]
   size?: ButtonVariants["size"]
   class?: HTMLAttributes["class"]
   loading?: boolean
+  disabled?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   as: "button",
   loading: false,
+  disabled: false,
 })
 </script>
 
@@ -26,7 +29,7 @@ const props = withDefaults(defineProps<Props>(), {
     :data-size="size"
     :as="as"
     :as-child="asChild"
-    :disabled="loading || ($attrs as any).disabled"
+    :disabled="loading || disabled"
     :class="cn(buttonVariants({ variant, size }), props.class)"
   >
     <span v-if="loading" class="btn-loading-spinner" />
