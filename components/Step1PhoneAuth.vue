@@ -116,7 +116,6 @@ function resendOtp() {
         id="otp" 
         class="otp-input"
         v-model="store.otpCode" 
-        @input="store.setOtpCode(($event.target as HTMLInputElement).value)" 
         inputmode="numeric" 
         :maxlength="6"
         :pattern="REGEXP_ONLY_DIGITS_AND_CHARS
