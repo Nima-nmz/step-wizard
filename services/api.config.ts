@@ -8,6 +8,14 @@ export const REGISTER_URLS = {
     register:{url: '/api/register' }
 }
 
+export const USER_URLS = {
+    profile: { url: '/api/user/profile' },
+    updateProfile: { url: '/api/user/profile' },
+    updateAvatar: { url: '/api/user/avatar' },
+    updateBank: { url: '/api/user/bank' },
+    idCard: { url: '/api/user/id-card' },
+}
+
 export const LOAN_URLS = {
     products: {url: '/api/loans/products'},
     calculate: {url: '/api/loans/calculate'},
