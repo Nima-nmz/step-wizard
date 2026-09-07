@@ -1,3 +1,5 @@
+import { getOrCreateUser } from '~/server/utils/userMockDb'
+
 export default defineEventHandler(async (event) => {
 const authHeader = getHeader(event, 'authorization')
 if (!authHeader?.startsWith('Bearer ') || !authHeader.slice(7).trim()) {
@@ -6,6 +8,7 @@ if (!authHeader?.startsWith('Bearer ') || !authHeader.slice(7).trim()) {
     data: { message: 'احراز هویت نامعتبر است' },
   })
 }
+const token = authHeader.slice(7).trim()
   const parts = await readMultipartFormData(event)
 
   if (!parts?.length) {
@@ -81,6 +84,21 @@ if (!authHeader?.startsWith('Bearer ') || !authHeader.slice(7).trim()) {
 
   // شبیه‌سازی تأخیر شبکه/پردازش سرور
   await new Promise((resolve) => setTimeout(resolve, 800))
+
+  const userData: Record<string, any> = {
+    phoneNumber: fields.phone_number,
+    firstName: fields.first_name,
+    lastName: fields.last_name,
+    nationalId: fields.national_id,
+    birthDate: fields.birth_date,
+    email: fields.email || null,
+  }
+
+  if (idCardImage) {
+    userData.idCardUrl = `data:${idCardImage.type || 'image/png'};base64,${idCardImage.data.toString('base64')}`
+  }
+
+  getOrCreateUser(token, userData)
 
   return {
     success: true,
