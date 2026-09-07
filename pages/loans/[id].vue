@@ -49,7 +49,7 @@ const {
             <Button variant="success" :disabled="application.status === 'approved' || submittingAdmin" :loading="submittingAdmin" @click="handleAdminApprove">
               تأیید درخواست
             </Button>
-            <Button variant="destructive" @click="handleAdminReject('رد شده')">
+            <Button variant="destructive" :disabled="application.status === 'rejected' || submittingAdmin" :loading="submittingAdmin" @click="handleAdminReject('رد شده')">
               رد درخواست
             </Button>
           </div>
