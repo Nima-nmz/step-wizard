@@ -13,6 +13,7 @@ const applications = ref<LoanApplication[]>([])
 const loading = ref(false)
 const error = ref('')
 const actingOnId = ref<number | null>(null)
+const actingAction = ref<'approve' | 'reject' | null>(null)
 const filterStatus = ref('all')
 
 const filterOptions = [
@@ -52,22 +53,31 @@ async function fetchLoans() {
 
 async function handleApprove(loan: LoanApplication) {
   actingOnId.value = loan.id
+  actingAction.value = 'approve'
   try {
     const updated = await approveLoanByAdmin(loan.id)
     const idx = applications.value.findIndex((a) => a.id === loan.id)
     if (idx !== -1) applications.value[idx] = updated
+  } catch (e: any) {
+    error.value = e?.data?.message || 'خطا در تأیید درخواست'
   } finally {
     actingOnId.value = null
+    actingAction.value = null
   }
 }
 
 async function handleRejectConfirm(id: number, reason: string) {
+  actingOnId.value = id
+  actingAction.value = 'reject'
   try {
     const updated = await rejectLoanByAdmin(id, reason)
     const idx = applications.value.findIndex((a) => a.id === id)
     if (idx !== -1) applications.value[idx] = updated
+  } catch (e: any) {
+    error.value = e?.data?.message || 'خطا در رد درخواست'
   } finally {
     actingOnId.value = null
+    actingAction.value = null
   }
 }
 
@@ -128,7 +138,8 @@ onMounted(fetchLoans)
             <Button
               variant="success"
               size="sm"
-              :disabled="loan.status === 'approved' || actingOnId === loan.id"
+              :disabled="loan.status === 'approved'"
+              :loading="actingOnId === loan.id && actingAction === 'approve'"
               @click="handleApprove(loan)"
             >
               تأیید
@@ -136,7 +147,8 @@ onMounted(fetchLoans)
             <Button
               variant="destructive"
               size="sm"
-              :disabled="loan.status === 'rejected' || actingOnId === loan.id"
+              :disabled="loan.status === 'rejected'"
+              :loading="actingOnId === loan.id && actingAction === 'reject'"
               @click="handleRejectConfirm(loan.id, 'رد شده')"
             >
               رد کردن
