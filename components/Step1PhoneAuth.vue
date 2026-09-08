@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { reactive } from 'vue'
 import { useWizardStore } from '~/stores/wizardStore'
 import { sendOtpApi, verifyOtpApi } from '~/services/Useauth.service'
 import { useOTP } from '~/composables/useOTP'
 import { useAdminAuth } from '~/composables/useAdminAuth'
 import { storeToRefs } from 'pinia'
+import { validatePhone, validateOtpCode } from '~/lib/validations'
 import InputOTP from './ui/input-otp/InputOTP.vue'
 import InputOTPGroup from './ui/input-otp/InputOTPGroup.vue'
 import InputOTPSlot from './ui/input-otp/InputOTPSlot.vue'
@@ -18,6 +20,29 @@ const { formattedTime, isRunning, canResend, start, reset } = useOTP(120)
 
 let hasRequestedOtp = false
 
+const fieldErrors = reactive<Record<string, string>>({
+  phone_number: '',
+  code: '',
+})
+
+function getFieldError(field: string) {
+  return fieldErrors[field] || validationErrors.value[field] || ''
+}
+
+function hasFieldError(field: string) {
+  return !!getFieldError(field)
+}
+
+function validatePhoneField() {
+  const result = validatePhone(store.phoneNumber)
+  fieldErrors.phone_number = result === true ? '' : result
+}
+
+function clearPhoneError() {
+  fieldErrors.phone_number = ''
+  store.clearFieldError('phone_number')
+}
+
 const statusClass = computed(() => {
   if (store.otpStatus === 'verified') {
     return '!border-green-500 !ring-green-500 text-green-600 bg-green-50/30'
@@ -29,10 +54,10 @@ const statusClass = computed(() => {
 })
 
 async function sendOtp() {
-  if (!/^09\d{9}$/.test(store.phoneNumber)) {
-    store.setValidationErrors({ phone_number: 'شماره موبایل معتبر نیست' })
-    return
-  }
+  validatePhoneField()
+  if (fieldErrors.phone_number) return
+
+  fieldErrors.phone_number = ''
   store.setValidationErrors({})
   store.setOtpStatus('sending')
 
@@ -59,11 +84,11 @@ async function verifyOtp() {
   } catch (error: any) {
     store.setOtpStatus('failed')
     if (error?.data?.errors) {
-      const fieldErrors: Record<string, string> = {}
+      const errors: Record<string, string> = {}
       Object.entries(error.data.errors).forEach(([field, msgs]) => {
-        fieldErrors[field] = Array.isArray(msgs) ? msgs[0] : String(msgs)
+        errors[field] = Array.isArray(msgs) ? msgs[0] : String(msgs)
       })
-      store.setValidationErrors(fieldErrors)
+      store.setValidationErrors(errors)
     }
   }
 }
@@ -90,10 +115,12 @@ function resendOtp() {
       placeholder="۰۹xxxxxxxxx" 
       maxlength="11" 
       :disabled="store.otpStatus === 'sent' && isRunning" 
-      :class="{ 'has-error': validationErrors.phone_number }"  />
+      :class="{ 'has-error': hasFieldError('phone_number') }"
+      @input="clearPhoneError"
+      @blur="validatePhoneField" />
 
-      <span v-if="validationErrors.phone_number" class="error">
-        {{ validationErrors.phone_number }}
+      <span v-if="getFieldError('phone_number')" class="error">
+        {{ getFieldError('phone_number') }}
       </span>
     </div>
 
@@ -131,7 +158,7 @@ function resendOtp() {
   </InputOTP>
   </div>
 
-      <span v-if="validationErrors.code" class="error">{{ validationErrors.code }}</span>
+      <span v-if="getFieldError('code')" class="error">{{ getFieldError('code') }}</span>
       <span v-if="store.otpStatus === 'verified'" class="success">شماره موبایل با موفقیت تأیید شد</span>
 
       <div class="otp-actions">
