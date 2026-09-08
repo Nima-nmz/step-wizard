@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { WizardState, PersonalInfo } from '~/types/wizard'
+import { isStep1Valid as checkStep1, isStep1PasswordValid as checkPassword, isStep2Valid as checkStep2 } from '~/lib/validations'
 
 export const AUTH_TOKEN_STORAGE_KEY = 'wizard_auth_token'
 export const AUTH_ROLE_STORAGE_KEY = 'wizard_auth_role'
@@ -35,19 +36,19 @@ export const useWizardStore = defineStore('wizard', {
   state: defaultState,
 
   getters: {
-    isStep1Valid: (s) => s.otpStatus === 'verified',
+    isStep1Valid: (s) => checkStep1(s.otpStatus),
 
-    isStep1PasswordValid: (s) =>
-      s.password.length >= 6 && s.isAuthenticated,
+    isStep1PasswordValid: (s) => checkPassword(s.password, s.isAuthenticated),
 
     isAdmin: (s) => s.role === 'admin',
 
-    isStep2Valid: (s) =>
-      !!s.personalInfo.firstName &&
-      !!s.personalInfo.lastName &&
-      !!s.personalInfo.nationalId &&
-      !!s.personalInfo.birthDate &&
-      s.idCardFile !== null,
+    isStep2Valid: (s) => checkStep2({
+      firstName: s.personalInfo.firstName,
+      lastName: s.personalInfo.lastName,
+      nationalId: s.personalInfo.nationalId,
+      birthDate: s.personalInfo.birthDate,
+      idCardFile: s.idCardFile,
+    }),
 
     getFieldError: (s) => {
       return (field: string) => s.validationErrors[field] || ''

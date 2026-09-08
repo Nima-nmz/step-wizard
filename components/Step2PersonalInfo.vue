@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import { useWizardStore } from '~/stores/wizardStore'
 import { useImageCompressor } from '~/composables/useImageCompressor'
 import { storeToRefs } from 'pinia'
+import { validatePersianName, validateNationalId, validateEmail, validateRequired, validateImageFile } from '~/lib/validations'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -40,12 +41,61 @@ const { compress, error: compressError } = useImageCompressor()
 const dragActive = ref(false)
 const fileInput = ref<HTMLInputElement | null>(null)
 
+const fieldErrors = reactive<Record<string, string>>({
+  first_name: '',
+  last_name: '',
+  national_id: '',
+  birth_date: '',
+  email: '',
+  national_id_image: '',
+})
+
+function validateField(field: string) {
+  let result: string | true = true
+  switch (field) {
+    case 'first_name':
+      result = validatePersianName(store.personalInfo.firstName, 'نام')
+      fieldErrors.first_name = result === true ? '' : result
+      break
+    case 'last_name':
+      result = validatePersianName(store.personalInfo.lastName, 'نام خانوادگی')
+      fieldErrors.last_name = result === true ? '' : result
+      break
+    case 'national_id':
+      result = validateNationalId(store.personalInfo.nationalId)
+      fieldErrors.national_id = result === true ? '' : result
+      break
+    case 'birth_date':
+      result = validateRequired(store.personalInfo.birthDate, 'تاریخ تولد')
+      fieldErrors.birth_date = result === true ? '' : result
+      break
+    case 'email':
+      result = validateEmail(store.personalInfo.email)
+      fieldErrors.email = result === true ? '' : result
+      break
+  }
+}
+
+function clearFieldError(field: string) {
+  fieldErrors[field] = ''
+  store.clearFieldError(field)
+}
+
+function getFieldError(field: string) {
+  return fieldErrors[field] || validationErrors.value[field] || ''
+}
+
+function hasFieldError(field: string) {
+  return !!getFieldError(field)
+}
+
 function triggerFileInput() {
   fileInput.value?.click()
 }
 
 function clearFile() {
   store.setIdCardFile(null)
+  fieldErrors.national_id_image = ''
 }
 
 async function handleFileSelect(event: Event) {
@@ -53,13 +103,18 @@ async function handleFileSelect(event: Event) {
   if (!input.files?.length) return
 
   const file = input.files[0]
-  if (!file.type.startsWith('image/')) return
+  const fileError = validateImageFile(file)
+  if (fileError !== true) {
+    fieldErrors.national_id_image = fileError as string
+    return
+  }
 
+  fieldErrors.national_id_image = ''
   try {
     const compressed = await compress(file, { maxWidth: 1200, quality: 0.7 })
     store.setIdCardFile(compressed)
   } catch {
-    store.setValidationErrors({ national_id_image: 'فشرده‌سازی ناموفق بود' })
+    fieldErrors.national_id_image = 'فشرده‌سازی ناموفق بود'
   }
 }
 
@@ -77,14 +132,22 @@ function handleDrop(e: DragEvent) {
   e.preventDefault()
   dragActive.value = false
   const file = e.dataTransfer?.files?.[0]
-  if (file && file.type.startsWith('image/')) {
+  if (file) {
+    const fileError = validateImageFile(file)
+    if (fileError !== true) {
+      fieldErrors.national_id_image = fileError as string
+      return
+    }
+    fieldErrors.national_id_image = ''
     compress(file).then(store.setIdCardFile)
   }
 }
+
 watch(birthDateValue, (newVal) => {
   if (newVal) {
-    birthDate.value = newVal.toString() // خروجی استاندارد: 'YYYY-MM-DD'
+    birthDate.value = newVal.toString()
     store.updatePersonalInfo('birthDate', birthDate.value)
+    fieldErrors.birth_date = ''
   } else {
     birthDate.value = ''
     store.updatePersonalInfo('birthDate', '')
@@ -100,25 +163,28 @@ watch(birthDateValue, (newVal) => {
       <div class="form-group">
         <Label>نام</Label>
         <Input v-model="store.personalInfo.firstName"
-          :class="{ 'has-error': validationErrors.first_name }"
-          @input="store.updatePersonalInfo('firstName', ($event.target as HTMLInputElement).value)" />
-        <span v-if="validationErrors.first_name" class="error">{{ validationErrors.first_name }}</span>
+          :class="{ 'has-error': hasFieldError('first_name') }"
+          @input="store.updatePersonalInfo('firstName', ($event.target as HTMLInputElement).value); clearFieldError('first_name')"
+          @blur="validateField('first_name')" />
+        <span v-if="getFieldError('first_name')" class="error">{{ getFieldError('first_name') }}</span>
       </div>
 
       <div class="form-group">
         <Label>نام خانوادگی</Label>
         <Input v-model="store.personalInfo.lastName"
-          :class="{ 'has-error': validationErrors.last_name }"
-          @input="store.updatePersonalInfo('lastName', ($event.target as HTMLInputElement).value)" />
-        <span v-if="validationErrors.last_name" class="error">{{ validationErrors.last_name }}</span>
+          :class="{ 'has-error': hasFieldError('last_name') }"
+          @input="store.updatePersonalInfo('lastName', ($event.target as HTMLInputElement).value); clearFieldError('last_name')"
+          @blur="validateField('last_name')" />
+        <span v-if="getFieldError('last_name')" class="error">{{ getFieldError('last_name') }}</span>
       </div>
 
       <div class="form-group">
         <Label>کد ملی</Label>
         <Input v-model="store.personalInfo.nationalId" maxlength="10"
-          :class="{ 'has-error': validationErrors.national_id }"
-          @input="store.updatePersonalInfo('nationalId', ($event.target as HTMLInputElement).value)" />
-        <span v-if="validationErrors.national_id" class="error">{{ validationErrors.national_id }}</span>
+          :class="{ 'has-error': hasFieldError('national_id') }"
+          @input="store.updatePersonalInfo('nationalId', ($event.target as HTMLInputElement).value); clearFieldError('national_id')"
+          @blur="validateField('national_id')" />
+        <span v-if="getFieldError('national_id')" class="error">{{ getFieldError('national_id') }}</span>
       </div>
 
       <div class="form-group">
@@ -128,7 +194,8 @@ watch(birthDateValue, (newVal) => {
             <Button
             variant="outline"
             :class="cn(
-              'w-full justify-start text-right font-normal h-9 px-3'
+              'w-full justify-start text-right font-normal h-9 px-3',
+              hasFieldError('birth_date') && 'border-red-500 focus:border-red-500 focus:ring-red-500/15'
             )"
       >
       <CalendarIcon  class="ml-2 size-4 text-muted-foreground shrink-0" />
@@ -147,17 +214,20 @@ watch(birthDateValue, (newVal) => {
         />
       </PopoverContent>
   </Popover>
-  <span v-if="validationErrors.birth_date" class="error">{{ validationErrors.birth_date }}</span>
+  <span v-if="getFieldError('birth_date')" class="error">{{ getFieldError('birth_date') }}</span>
 </div>
 
       <div class="form-group full-width">
         <Label>ایمیل (اختیاری)</Label>
         <Input v-model="store.personalInfo.email" type="email"
-          @input="store.updatePersonalInfo('email', ($event.target as HTMLInputElement).value)" />
+          :class="{ 'has-error': hasFieldError('email') }"
+          @input="store.updatePersonalInfo('email', ($event.target as HTMLInputElement).value); clearFieldError('email')"
+          @blur="validateField('email')" />
+        <span v-if="getFieldError('email')" class="error">{{ getFieldError('email') }}</span>
       </div>
     </div>
 
-    <div class="upload-section" :class="{ 'drag-active': dragActive, 'has-error': validationErrors.national_id_image }"
+    <div class="upload-section" :class="{ 'drag-active': dragActive, 'has-error': hasFieldError('national_id_image') }"
       @dragover="handleDragOver" @dragleave="handleDragLeave" @drop="handleDrop"
       @click="triggerFileInput">
       <input ref="fileInput" type="file" accept="image/*" hidden @change="handleFileSelect" />
@@ -177,7 +247,7 @@ watch(birthDateValue, (newVal) => {
         <span>حداکثر ۵ مگابایت - به صورت خودکار فشرده می‌شود</span>
       </div>
 
-      <span v-if="validationErrors.national_id_image" class="error">{{ validationErrors.national_id_image }}</span>
+      <span v-if="getFieldError('national_id_image')" class="error">{{ getFieldError('national_id_image') }}</span>
     </div>
 
     <div v-if="store.isCompressing" class="compressing">

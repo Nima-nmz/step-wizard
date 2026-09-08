@@ -1,3 +1,5 @@
+import { MESSAGES } from '~/lib/validations'
+
 const ADMIN_PHONE_NUMBERS = ['09120000000']
 
 export default defineEventHandler(async (event) => {
@@ -5,7 +7,7 @@ export default defineEventHandler(async (event) => {
   if (body?.code !== '123456') {
     throw createError({
       statusCode: 422,
-      data: { errors: { code: ['کد تأیید صحیح نیست'] } },
+      data: { errors: { code: [MESSAGES.otpCode] } },
     })
   }
   await new Promise((r) => setTimeout(r, 500))

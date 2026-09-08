@@ -55,6 +55,7 @@ function seed() {
       status: 'approved',
       documents: [],
       guarantor: null,
+      rejectionReason: null,
       ownerToken: 'user-seed-1',
       createdAt: '2026-07-01T09:00:00.000Z',
       updatedAt: '2026-07-05T09:00:00.000Z',
@@ -72,6 +73,7 @@ function seed() {
       status: 'rejected',
       documents: [],
       guarantor: null,
+      rejectionReason: 'مدارک ناکافی',
       ownerToken: 'user-seed-1',
       createdAt: '2026-06-15T09:00:00.000Z',
       updatedAt: '2026-06-18T09:00:00.000Z',
@@ -93,6 +95,7 @@ export function createApplication(productId: number, amount: number, durationMon
     status: 'draft',
     documents: [],
     guarantor: null,
+    rejectionReason: null,
     ownerToken,
     createdAt: nowIso(),
     updatedAt: nowIso(),
@@ -130,6 +133,9 @@ export function setGuarantor(app: LoanRecord, guarantor: LoanGuarantor) {
 export function pushTimeline(app: LoanRecord, status: LoanStatus, note?: string) {
   app.timeline.push({ id: nextTimelineId++, status, note, createdAt: nowIso() })
   app.status = status
+  if (status === 'rejected' && note) {
+    app.rejectionReason = note
+  }
   app.updatedAt = nowIso()
 }
 

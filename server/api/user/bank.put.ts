@@ -1,4 +1,5 @@
 import { getOrCreateUser, updateUser } from '~/server/utils/userMockDb'
+import { validateUpdateBank } from '~/lib/validations'
 
 export default defineEventHandler(async (event) => {
   const authHeader = getHeader(event, 'authorization')
@@ -10,17 +11,13 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody(event)
 
-  const errors: Record<string, string[]> = {}
-  if (!body.iban?.trim()) {
-    errors.iban = ['شماره شبا الزامی است']
-  } else {
-    const cleaned = body.iban.replace(/[\s\-]/g, '').toUpperCase()
-    if (!/^IR\d{24}$/.test(cleaned)) {
-      errors.iban = ['شماره شبا معتبر نیست (IR + 24 رقم)']
-    }
-  }
+  const { valid, errors: validationErrors } = validateUpdateBank(body)
 
-  if (Object.keys(errors).length > 0) {
+  if (!valid) {
+    const errors: Record<string, string[]> = {}
+    for (const [field, msg] of Object.entries(validationErrors)) {
+      errors[field] = [msg]
+    }
     throw createError({ statusCode: 422, data: { message: 'اطلاعات نامعتبر', errors } })
   }
 

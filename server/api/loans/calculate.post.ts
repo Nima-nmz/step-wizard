@@ -1,8 +1,4 @@
-const PRODUCTS: Record<number, { minAmount: number; maxAmount: number; minDurationMonths: number; maxDurationMonths: number; interestRate: number }> = {
-  1: { minAmount: 5_000_000, maxAmount: 50_000_000, minDurationMonths: 3, maxDurationMonths: 12, interestRate: 18 },
-  2: { minAmount: 20_000_000, maxAmount: 150_000_000, minDurationMonths: 6, maxDurationMonths: 24, interestRate: 20 },
-  3: { minAmount: 50_000_000, maxAmount: 300_000_000, minDurationMonths: 12, maxDurationMonths: 48, interestRate: 23 },
-}
+import { validateLoanCalculate, PRODUCTS } from '~/lib/validations'
 
 export default defineEventHandler(async (event) => {
   const authHeader = getHeader(event, 'authorization')
@@ -11,26 +7,18 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody<{ productId: number; amount: number; durationMonths: number }>(event)
-  const product = PRODUCTS[body?.productId]
-  const errors: Record<string, string[]> = {}
 
-if (!product) {
-  throw createError({ statusCode: 422, data: { message: 'طرح وام معتبر نیست' } })
-}
+  const { valid, errors: validationErrors } = validateLoanCalculate(body)
 
+  if (!valid) {
+    const errors: Record<string, string[]> = {}
+    for (const [field, msg] of Object.entries(validationErrors)) {
+      errors[field] = [msg]
+    }
+    throw createError({ statusCode: 422, data: { message: 'اطلاعات نامعتبر است', errors } })
+  }
 
-if (!body.amount || body.amount < product.minAmount || body.amount > product.maxAmount) {
-  errors.amount = [`مبلغ باید بین ${product.minAmount.toLocaleString('fa-IR')} تا ${product.maxAmount.toLocaleString('fa-IR')} تومان باشد`]
-}
-
-if (!body.durationMonths || body.durationMonths < product.minDurationMonths || body.durationMonths > product.maxDurationMonths) {
-  errors.durationMonths = [`مدت باید بین ${product.minDurationMonths} تا ${product.maxDurationMonths} ماه باشد`]
-}
-
-if (Object.keys(errors).length > 0) {
-  throw createError({ statusCode: 422, data: { message: 'اطلاعات نامعتبر است', errors } })
-}
-
+  const product = PRODUCTS[body.productId]
   const monthlyRate = product.interestRate / 100 / 12
   const n = body.durationMonths
   const monthlyInstallment = Math.round(

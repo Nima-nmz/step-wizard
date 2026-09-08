@@ -58,6 +58,7 @@ export interface LoanApplication {
   status: LoanStatus
   documents: LoanDocument[]
   guarantor: LoanGuarantor | null
+  rejectionReason: string | null
   createdAt: string
   updatedAt: string
 }

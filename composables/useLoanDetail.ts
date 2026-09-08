@@ -40,10 +40,18 @@ export function useLoanDetail(loanId: number) {
     }, (e) => getMessage(e, 'دریافت اطلاعات درخواست با خطا مواجه شد.'))
   }
 
+  async function refreshTimeline() {
+    try {
+      const events = await getLoanTimeline(loanId)
+      timeline.value = events
+    } catch {}
+  }
+
   async function uploadDocument(file: File) {
     await uploadOp.execute(async () => {
       const doc = await uploadLoanDocument(loanId, file)
       application.value?.documents.push(doc)
+      await refreshTimeline()
     }, (e) => getMessage(e, 'آپلود مدرک با خطا مواجه شد.'))
   }
 
@@ -53,6 +61,7 @@ export function useLoanDetail(loanId: number) {
       if (application.value) {
         application.value.documents = application.value.documents.filter((d) => d.id !== docId)
       }
+      await refreshTimeline()
     }, (e) => getMessage(e, 'حذف مدرک با خطا مواجه شد.'))
   }
 
@@ -62,6 +71,7 @@ export function useLoanDetail(loanId: number) {
     try {
       const updated = await submitLoanGuarantor(loanId, payload)
       application.value = updated
+      await refreshTimeline()
     } catch (e: any) {
       guarantorErrors.value = getFieldErrors(e)
     } finally {
@@ -73,8 +83,7 @@ export function useLoanDetail(loanId: number) {
     await finalOp.execute(async () => {
       const updated = await submitLoanApplication(loanId)
       application.value = updated
-      const events = await getLoanTimeline(loanId)
-      timeline.value = events
+      await refreshTimeline()
     }, (e) => getMessage(e, 'ارسال درخواست با خطا مواجه شد.'))
   }
 
@@ -82,8 +91,7 @@ export function useLoanDetail(loanId: number) {
     await cancelOp.execute(async () => {
       const updated = await cancelLoan(loanId)
       application.value = updated
-      const events = await getLoanTimeline(loanId)
-      timeline.value = events
+      await refreshTimeline()
     }, (e) => getMessage(e, 'لغو درخواست با خطا مواجه شد.'))
   }
 
@@ -92,6 +100,7 @@ export function useLoanDetail(loanId: number) {
     await adminOp.execute(async () => {
       const updated = await approveLoanByAdmin(application.value!.id)
       application.value = updated
+      await refreshTimeline()
     }, (e) => getMessage(e, 'تأیید با خطا مواجه شد.'))
   }
 
@@ -100,6 +109,7 @@ export function useLoanDetail(loanId: number) {
     await adminOp.execute(async () => {
       const updated = await rejectLoanByAdmin(application.value!.id, reason)
       application.value = updated
+      await refreshTimeline()
     }, (e) => getMessage(e, 'رد درخواست با خطا مواجه شد.'))
   }
 

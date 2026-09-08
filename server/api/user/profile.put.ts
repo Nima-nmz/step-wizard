@@ -1,4 +1,5 @@
 import { getOrCreateUser, updateUser } from '~/server/utils/userMockDb'
+import { validateUpdateProfile } from '~/lib/validations'
 
 export default defineEventHandler(async (event) => {
   const authHeader = getHeader(event, 'authorization')
@@ -10,18 +11,13 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody(event)
 
-  const errors: Record<string, string[]> = {}
-  if (body.first_name !== undefined && !body.first_name?.trim()) {
-    errors.first_name = ['نام نمی‌تواند خالی باشد']
-  }
-  if (body.last_name !== undefined && !body.last_name?.trim()) {
-    errors.last_name = ['نام خانوادگی نمی‌تواند خالی باشد']
-  }
-  if (body.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
-    errors.email = ['ایمیل معتبر نیست']
-  }
+  const { valid, errors: validationErrors } = validateUpdateProfile(body)
 
-  if (Object.keys(errors).length > 0) {
+  if (!valid) {
+    const errors: Record<string, string[]> = {}
+    for (const [field, msg] of Object.entries(validationErrors)) {
+      errors[field] = [msg]
+    }
     throw createError({ statusCode: 422, data: { message: 'اطلاعات نامعتبر', errors } })
   }
 

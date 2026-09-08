@@ -6,6 +6,15 @@ import PageContainer from '~/components/ui/PageContainer.vue'
 import LoadingState from '~/components/ui/LoadingState.vue'
 import LoanCard from '~/components/loan/LoanCard.vue'
 import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+} from '@/components/ui/alert-dialog'
 
 definePageMeta({ middleware: 'admin' })
 
@@ -15,6 +24,11 @@ const error = ref('')
 const actingOnId = ref<number | null>(null)
 const actingAction = ref<'approve' | 'reject' | null>(null)
 const filterStatus = ref('all')
+
+const showRejectDialog = ref(false)
+const rejectTargetId = ref<number | null>(null)
+const rejectReason = ref('')
+const rejectReasonError = ref('')
 
 const filterOptions = [
   { key: 'all', label: 'همه' },
@@ -66,13 +80,44 @@ async function handleApprove(loan: LoanApplication) {
   }
 }
 
-async function handleRejectConfirm(id: number, reason: string) {
-  actingOnId.value = id
+function openRejectDialog(loanId: number) {
+  rejectTargetId.value = loanId
+  rejectReason.value = ''
+  rejectReasonError.value = ''
+  showRejectDialog.value = true
+}
+
+function closeRejectDialog() {
+  showRejectDialog.value = false
+  rejectTargetId.value = null
+  rejectReason.value = ''
+  rejectReasonError.value = ''
+}
+
+function validateRejectReason() {
+  if (!rejectReason.value.trim()) {
+    rejectReasonError.value = 'دلیل رد الزامی است'
+    return false
+  }
+  if (rejectReason.value.trim().length < 5) {
+    rejectReasonError.value = 'دلیل رد باید حداقل ۵ کاراکتر باشد'
+    return false
+  }
+  rejectReasonError.value = ''
+  return true
+}
+
+async function confirmReject() {
+  if (!validateRejectReason()) return
+  if (!rejectTargetId.value) return
+
+  actingOnId.value = rejectTargetId.value
   actingAction.value = 'reject'
   try {
-    const updated = await rejectLoanByAdmin(id, reason)
-    const idx = applications.value.findIndex((a) => a.id === id)
+    const updated = await rejectLoanByAdmin(rejectTargetId.value, rejectReason.value.trim())
+    const idx = applications.value.findIndex((a) => a.id === rejectTargetId.value)
     if (idx !== -1) applications.value[idx] = updated
+    closeRejectDialog()
   } catch (e: any) {
     error.value = e?.data?.message || 'خطا در رد درخواست'
   } finally {
@@ -149,7 +194,7 @@ onMounted(fetchLoans)
               size="sm"
               :disabled="loan.status === 'rejected'"
               :loading="actingOnId === loan.id && actingAction === 'reject'"
-              @click="handleRejectConfirm(loan.id, 'رد شده')"
+              @click="openRejectDialog(loan.id)"
             >
               رد کردن
             </Button>
@@ -158,6 +203,37 @@ onMounted(fetchLoans)
       </ul>
     </LoadingState>
 
+    <AlertDialog v-model:open="showRejectDialog">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>رد درخواست وام</AlertDialogTitle>
+          <AlertDialogDescription>
+            لطفاً دلیل رد درخواست را بنویسید. این دلیل برای متقاضی نمایش داده خواهد شد.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <div class="reject-dialog-body">
+          <textarea
+            v-model="rejectReason"
+            class="reject-textarea"
+            :class="{ 'has-error': rejectReasonError }"
+            rows="4"
+            placeholder="دلیل رد درخواست را بنویسید (حداقل ۵ کاراکتر)..."
+            @input="rejectReasonError = ''"
+          />
+          <span v-if="rejectReasonError" class="field-error">{{ rejectReasonError }}</span>
+        </div>
+        <AlertDialogFooter>
+          <AlertDialogCancel @click="closeRejectDialog">انصراف</AlertDialogCancel>
+          <Button
+            variant="destructive"
+            :disabled="actingAction === 'reject'"
+            @click="confirmReject"
+          >
+            {{ actingAction === 'reject' ? 'در حال رد...' : 'تأیید رد درخواست' }}
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </PageContainer>
 </template>
 
@@ -201,5 +277,19 @@ onMounted(fetchLoans)
 }
 .empty-box {
   @apply rounded-[10px] bg-white p-8 text-center text-gray-500;
+}
+
+.reject-dialog-body {
+  @apply px-1;
+}
+.reject-textarea {
+  @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm resize-none transition-colors;
+  @apply focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20;
+}
+.reject-textarea.has-error {
+  @apply border-red-500;
+}
+.field-error {
+  @apply mt-1.5 block text-[0.75rem] text-red-500;
 }
 </style>
