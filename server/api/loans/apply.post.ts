@@ -1,4 +1,5 @@
 import { createApplication, toPublicApplication } from '~/server/utils/loanMockDb'
+import { validateLoanApply } from '~/lib/validations'
 
 export default defineEventHandler(async (event) => {
   const authHeader = getHeader(event, 'authorization')
@@ -8,13 +9,14 @@ export default defineEventHandler(async (event) => {
 
   const ownerToken = authHeader.slice(7).trim()
   const body = await readBody<{ productId: number; amount: number; durationMonths: number }>(event)
-  const errors: Record<string, string[]> = {}
 
-  if (!body?.productId) errors.productId = ['طرح وام الزامی است']
-  if (!body?.amount || body.amount < 1_000_000) errors.amount = ['مبلغ نامعتبر است']
-  if (!body?.durationMonths || body.durationMonths < 1) errors.durationMonths = ['مدت نامعتبر است']
+  const { valid, errors: validationErrors } = validateLoanApply(body)
 
-  if (Object.keys(errors).length > 0) {
+  if (!valid) {
+    const errors: Record<string, string[]> = {}
+    for (const [field, msg] of Object.entries(validationErrors)) {
+      errors[field] = [msg]
+    }
     throw createError({ statusCode: 422, data: { message: 'اطلاعات نامعتبر است', errors } })
   }
 

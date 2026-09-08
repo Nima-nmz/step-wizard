@@ -1,31 +1,32 @@
 import { findApplication, setGuarantor, toPublicApplication } from '~/server/utils/loanMockDb'
+import { validateGuarantor, MESSAGES } from '~/lib/validations'
 
 export default defineEventHandler(async (event) => {
   const authHeader = getHeader(event, 'authorization')
   if (!authHeader?.startsWith('Bearer ') || !authHeader.slice(7).trim()) {
-    throw createError({ statusCode: 401, data: { message: 'احراز هویت نامعتبر است' } })
+    throw createError({ statusCode: 401, data: { message: MESSAGES.authRequired } })
   }
 
   const id = Number(getRouterParam(event, 'id'))
   const application = findApplication(id)
 
   if (!application) {
-    throw createError({ statusCode: 404, data: { message: 'درخواست وام یافت نشد' } })
+    throw createError({ statusCode: 404, data: { message: MESSAGES.notFound } })
   }
 
   if (application.status !== 'draft') {
-    throw createError({ statusCode: 422, data: { message: 'فقط درخواست‌های پیش‌نویس قابل ویرایش هستند' } })
+    throw createError({ statusCode: 422, data: { message: MESSAGES.draftOnly } })
   }
 
   const body = await readBody<{ fullName: string; nationalId: string; phoneNumber: string; relationship: string }>(event)
-  const errors: Record<string, string[]> = {}
 
-  if (!body?.fullName?.trim()) errors.fullName = ['نام ضامن الزامی است']
-  if (!/^\d{10}$/.test(body?.nationalId || '')) errors.nationalId = ['کد ملی باید ۱۰ رقم باشد']
-  if (!/^09\d{9}$/.test(body?.phoneNumber || '')) errors.phoneNumber = ['شماره موبایل معتبر نیست']
-  if (!body?.relationship?.trim()) errors.relationship = ['نسبت ضامن الزامی است']
+  const { valid, errors: validationErrors } = validateGuarantor(body)
 
-  if (Object.keys(errors).length > 0) {
+  if (!valid) {
+    const errors: Record<string, string[]> = {}
+    for (const [field, msg] of Object.entries(validationErrors)) {
+      errors[field] = [msg]
+    }
     throw createError({ statusCode: 422, data: { message: 'اطلاعات نامعتبر است', errors } })
   }
 
